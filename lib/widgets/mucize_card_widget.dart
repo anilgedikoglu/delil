@@ -290,7 +290,7 @@ class MucizeCardFeatured extends StatelessWidget {
                         height: 1.5,
                         fontStyle: FontStyle.italic,
                       ),
-                      maxLines: 3,
+                      maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 10),

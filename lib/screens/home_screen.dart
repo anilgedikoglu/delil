@@ -348,7 +348,7 @@ class _MucizelerContent extends StatelessWidget {
         ),
         SliverToBoxAdapter(
           child: SizedBox(
-            height: 220,
+            height: 248,
             child: ListView.builder(
               scrollDirection: Axis.horizontal,
               padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
