@@ -91,6 +91,64 @@ class AppIcons {
       categoryIcons[cat] ?? Icons.lightbulb_outline;
 }
 
+class MucizeColors {
+  static const Map<String, Color> categoryColors = {
+    'Kur\'an Mucizeleri':                            AppColors.amber,
+    'Hz. Muhammed\'in Mucizeleri':                   AppColors.green,
+    'Peygamberler ve Kur\'an Kıssaları':             AppColors.purple,
+    'İslam\'ın Hikmet ve Medeniyet Mucizeleri':      AppColors.teal,
+  };
+
+  static const Map<String, Color> categoryColorsDim = {
+    'Kur\'an Mucizeleri':                            Color(0xFF6A420D),
+    'Hz. Muhammed\'in Mucizeleri':                   Color(0xFF234D30),
+    'Peygamberler ve Kur\'an Kıssaları':             Color(0xFF3D2F6A),
+    'İslam\'ın Hikmet ve Medeniyet Mucizeleri':      Color(0xFF1D4D46),
+  };
+
+  static const Map<String, IconData> categoryIcons = {
+    'Kur\'an Mucizeleri':                            Icons.menu_book_outlined,
+    'Hz. Muhammed\'in Mucizeleri':                   Icons.star_outline_rounded,
+    'Peygamberler ve Kur\'an Kıssaları':             Icons.history_edu_outlined,
+    'İslam\'ın Hikmet ve Medeniyet Mucizeleri':      Icons.lightbulb_outline,
+  };
+
+  static Color forCategory(String cat) =>
+      categoryColors[cat] ?? AppColors.amber;
+  static Color dimForCategory(String cat) =>
+      categoryColorsDim[cat] ?? const Color(0xFF6A420D);
+  static IconData iconForCategory(String cat) =>
+      categoryIcons[cat] ?? Icons.star_outline_rounded;
+
+  // miracleType badge rengi
+  static Color forMiracleType(String t) {
+    if (t.contains('asli'))        return AppColors.gold;
+    if (t.contains('bilimsel'))    return AppColors.cyan;
+    if (t.contains('edebi'))       return AppColors.purple;
+    if (t.contains('gayb'))        return AppColors.green;
+    if (t.contains('hadis') || t.contains('siyer')) return AppColors.teal;
+    if (t.contains('hikmet'))      return AppColors.rose;
+    if (t.contains('manevi'))      return AppColors.indigo;
+    if (t.contains('kıssa'))       return AppColors.blue;
+    if (t.contains('tartışmalı') || t.contains('numerik')) return AppColors.amber;
+    return AppColors.textMuted;
+  }
+
+  // miracleType kısa etiket
+  static String labelForMiracleType(String t) {
+    if (t.contains('asli'))        return 'Asli Mucize';
+    if (t.contains('bilimsel'))    return 'Bilimsel İşaret';
+    if (t.contains('edebi'))       return 'Edebî Mucize';
+    if (t.contains('gayb'))        return 'Gaybî Haber';
+    if (t.contains('hadis') || t.contains('siyer')) return 'Hadis Mucizesi';
+    if (t.contains('hikmet'))      return 'Hikmet';
+    if (t.contains('manevi'))      return 'Manevî';
+    if (t.contains('kıssa'))       return 'Kıssa';
+    if (t.contains('tartışmalı') || t.contains('numerik')) return 'Tartışmalı';
+    return t;
+  }
+}
+
 ThemeData buildAppTheme() {
   final base = ThemeData.dark();
   return base.copyWith(
