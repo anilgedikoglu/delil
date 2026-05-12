@@ -184,12 +184,18 @@ class _NoResults extends StatelessWidget {
   }
 }
 
-class _ResultsList extends StatelessWidget {
+class _ResultsList extends StatefulWidget {
   final List<Delil> results;
   const _ResultsList({required this.results});
 
   @override
+  State<_ResultsList> createState() => _ResultsListState();
+}
+
+class _ResultsListState extends State<_ResultsList> {
+  @override
   Widget build(BuildContext context) {
+    final results = widget.results;
     return Column(
       children: [
         Padding(
@@ -210,9 +216,12 @@ class _ResultsList extends StatelessWidget {
             itemCount: results.length,
             itemBuilder: (context, i) => DelilCardWidget(
               delil: results[i],
-              onTap: () => Navigator.push(context, MaterialPageRoute(
-                builder: (_) => DetailScreen(delil: results[i]),
-              )),
+              onTap: () async {
+                await Navigator.push(context, MaterialPageRoute(
+                  builder: (_) => DetailScreen(delil: results[i]),
+                ));
+                if (mounted) setState(() {});
+              },
             ),
           ),
         ),

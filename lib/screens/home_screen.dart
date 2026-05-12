@@ -6,12 +6,24 @@ import '../widgets/delil_card_widget.dart';
 import 'detail_screen.dart';
 import 'category_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
   @override
+  State<HomeScreen> createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  late final List<dynamic> _recommended;
+
+  @override
+  void initState() {
+    super.initState();
+    _recommended = getRecommended();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    final recommended = getRecommended();
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Column(
@@ -30,10 +42,15 @@ class HomeScreen extends StatelessWidget {
                 padding: const EdgeInsets.fromLTRB(16, 4, 16, 4),
                 child: Row(
                   children: [
-                    Image.asset(
-                      'assets/images/logo_horizontal.png',
-                      height: 60,
-                      fit: BoxFit.contain,
+                    // Logo %50 büyük — Transform.scale layout'u etkilemez
+                    Transform.scale(
+                      scale: 1.5,
+                      alignment: Alignment.centerLeft,
+                      child: Image.asset(
+                        'assets/images/logo_horizontal.png',
+                        height: 60,
+                        fit: BoxFit.contain,
+                      ),
                     ),
                     const Spacer(),
                     Container(
@@ -95,13 +112,16 @@ class HomeScreen extends StatelessWidget {
                     child: ListView.builder(
                       scrollDirection: Axis.horizontal,
                       padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
-                      itemCount: recommended.length,
+                      itemCount: _recommended.length,
                       itemBuilder: (context, i) => DelilCardFeatured(
-                        delil: recommended[i],
+                        delil: _recommended[i],
                         index: i,
-                        onTap: () => Navigator.push(context, MaterialPageRoute(
-                          builder: (_) => DetailScreen(delil: recommended[i]),
-                        )),
+                        onTap: () async {
+                          await Navigator.push(context, MaterialPageRoute(
+                            builder: (_) => DetailScreen(delil: _recommended[i]),
+                          ));
+                          if (mounted) setState(() {});
+                        },
                       ),
                     ),
                   ),

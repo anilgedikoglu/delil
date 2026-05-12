@@ -5,16 +5,23 @@ import '../theme/app_theme.dart';
 import '../widgets/delil_card_widget.dart';
 import 'detail_screen.dart';
 
-class CategoryScreen extends StatelessWidget {
+class CategoryScreen extends StatefulWidget {
   final String category;
 
   const CategoryScreen({super.key, required this.category});
 
   @override
+  State<CategoryScreen> createState() => _CategoryScreenState();
+}
+
+class _CategoryScreenState extends State<CategoryScreen> {
+  bool _navigating = false;
+
+  @override
   Widget build(BuildContext context) {
-    final deliller = getByCategory(category);
-    final color = AppColors.forCategory(category);
-    final icon = AppIcons.forCategory(category);
+    final deliller = getByCategory(widget.category);
+    final color = AppColors.forCategory(widget.category);
+    final icon = AppIcons.forCategory(widget.category);
 
     final subcats = deliller.map((d) => d.subcategory).toSet().toList();
 
@@ -27,7 +34,9 @@ class CategoryScreen extends StatelessWidget {
             backgroundColor: AppColors.surface,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.gold),
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                if (!_navigating) Navigator.pop(context);
+              },
             ),
             title: Row(
               children: [
@@ -35,7 +44,7 @@ class CategoryScreen extends StatelessWidget {
                 const SizedBox(width: 8),
                 Expanded(
                   child: Text(
-                    _shortName(category),
+                    _shortName(widget.category),
                     style: GoogleFonts.notoSerif(
                       fontSize: 17,
                       fontWeight: FontWeight.w700,
@@ -92,9 +101,14 @@ class CategoryScreen extends StatelessWidget {
                   final d = sub[i];
                   return DelilCardWidget(
                     delil: d,
-                    onTap: () => Navigator.push(context, MaterialPageRoute(
-                      builder: (_) => DetailScreen(delil: d),
-                    )),
+                    onTap: () async {
+                      if (_navigating) return;
+                      setState(() => _navigating = true);
+                      await Navigator.push(context, MaterialPageRoute(
+                        builder: (_) => DetailScreen(delil: d),
+                      ));
+                      if (mounted) setState(() => _navigating = false);
+                    },
                   );
                 },
                 childCount: deliller.where((d) => d.subcategory == subcat).length,
