@@ -17,82 +17,80 @@ class DetailScreen extends StatelessWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: CustomScrollView(
-        slivers: [
-          SliverAppBar(
-            expandedHeight: 180,
-            pinned: true,
-            backgroundColor: AppColors.surface,
-            leading: IconButton(
-              icon: const Icon(Icons.arrow_back_ios_new, color: AppColors.gold),
-              onPressed: () => Navigator.pop(context),
+      body: Column(
+        children: [
+          // ── SABİT HEADER BANDI ─────────────────────────────────
+          Container(
+            decoration: const BoxDecoration(
+              color: AppColors.surface,
+              border: Border(
+                bottom: BorderSide(color: AppColors.cardBorder, width: 0.5),
+              ),
             ),
-            flexibleSpace: FlexibleSpaceBar(
-              background: Container(
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                    colors: [
-                      catColor.withOpacity(0.2),
-                      AppColors.surface,
-                    ],
-                  ),
-                ),
-                child: SafeArea(
-                  child: Padding(
-                    padding: const EdgeInsets.fromLTRB(20, 48, 20, 12),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          children: [
-                            Container(
-                              padding: const EdgeInsets.all(10),
-                              decoration: BoxDecoration(
-                                color: catColor.withOpacity(0.2),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Icon(catIcon, color: catColor, size: 22),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    delil.id,
-                                    style: GoogleFonts.notoSans(
-                                      fontSize: 11,
-                                      color: catColor.withOpacity(0.8),
-                                      letterSpacing: 1.2,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  Text(
-                                    delil.title,
-                                    style: GoogleFonts.notoSerif(
-                                      fontSize: 20,
-                                      fontWeight: FontWeight.w800,
-                                      color: AppColors.textPrimary,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                        const SizedBox(height: 10),
-                        StrengthBadge(strength: delil.strength),
-                      ],
+            child: SafeArea(
+              bottom: false,
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(4, 8, 16, 8),
+                child: Row(
+                  children: [
+                    // Geri butonu
+                    IconButton(
+                      icon: const Icon(Icons.arrow_back_ios_new,
+                          color: AppColors.gold, size: 18),
+                      onPressed: () => Navigator.pop(context),
                     ),
-                  ),
+                    // Boşluk + kategori ikonu
+                    const SizedBox(width: 4),
+                    Container(
+                      padding: const EdgeInsets.all(8),
+                      decoration: BoxDecoration(
+                        color: catColor.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Icon(catIcon, color: catColor, size: 18),
+                    ),
+                    const SizedBox(width: 10),
+                    // ID + Başlık
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            delil.id,
+                            style: GoogleFonts.notoSans(
+                              fontSize: 10,
+                              color: catColor.withOpacity(0.8),
+                              letterSpacing: 1.2,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          Text(
+                            delil.title,
+                            style: GoogleFonts.notoSerif(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w800,
+                              color: AppColors.textPrimary,
+                              height: 1.2,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    // Güç badgei — sağda sabit
+                    StrengthBadge(strength: delil.strength),
+                  ],
                 ),
               ),
             ),
           ),
-          SliverToBoxAdapter(
-            child: Padding(
+
+          // ── KAYDIRILAN İÇERİK ─────────────────────────────────
+          Expanded(
+            child: SingleChildScrollView(
               padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -116,7 +114,9 @@ class DetailScreen extends StatelessWidget {
                   const SizedBox(height: 28),
                   _TagsSection(tags: delil.tags, color: catColor),
                   const SizedBox(height: 28),
-                  _CategoryRow(category: delil.category, subcategory: delil.subcategory),
+                  _CategoryRow(
+                      category: delil.category,
+                      subcategory: delil.subcategory),
                   const SizedBox(height: 28),
                   _SourcesSection(codes: delil.sources),
                   const SizedBox(height: 40),
