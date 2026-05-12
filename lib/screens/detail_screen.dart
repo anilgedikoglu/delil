@@ -4,11 +4,25 @@ import '../models/delil_model.dart';
 import '../data/sources_data.dart';
 import '../theme/app_theme.dart';
 import '../widgets/strength_badge.dart';
+import '../services/read_tracker.dart';
 
-class DetailScreen extends StatelessWidget {
+class DetailScreen extends StatefulWidget {
   final Delil delil;
 
   const DetailScreen({super.key, required this.delil});
+
+  @override
+  State<DetailScreen> createState() => _DetailScreenState();
+}
+
+class _DetailScreenState extends State<DetailScreen> {
+  @override
+  void initState() {
+    super.initState();
+    ReadTracker.instance.markRead(widget.delil.id);
+  }
+
+  Delil get delil => widget.delil;
 
   @override
   Widget build(BuildContext context) {

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../models/delil_model.dart';
 import '../theme/app_theme.dart';
+import '../services/read_tracker.dart';
 import 'strength_badge.dart';
 
 class DelilCardWidget extends StatelessWidget {
@@ -22,6 +23,16 @@ class DelilCardWidget extends StatelessWidget {
     final catColorDim = AppColors.dimForCategory(delil.category);
     final catIcon = AppIcons.forCategory(delil.category);
 
+    return ValueListenableBuilder<Set<String>>(
+      valueListenable: ReadTracker.instance.readIds,
+      builder: (context, readIds, _) {
+        final isRead = readIds.contains(delil.id);
+        return _buildCard(catColor, catColorDim, catIcon, isRead);
+      },
+    );
+  }
+
+  Widget _buildCard(Color catColor, Color catColorDim, IconData catIcon, bool isRead) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -95,6 +106,23 @@ class DelilCardWidget extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(width: 8),
+                        if (isRead)
+                          Padding(
+                            padding: const EdgeInsets.only(right: 6),
+                            child: Container(
+                              width: 22,
+                              height: 22,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: const Color(0xFF2ECC71).withOpacity(0.18),
+                              ),
+                              child: const Icon(
+                                Icons.check,
+                                size: 13,
+                                color: Color(0xFF2ECC71),
+                              ),
+                            ),
+                          ),
                         StrengthBadge(strength: delil.strength, compact: true),
                       ],
                     ),

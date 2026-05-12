@@ -5,9 +5,11 @@ import 'theme/app_theme.dart';
 import 'screens/home_screen.dart';
 import 'screens/search_screen.dart';
 import 'screens/sources_screen.dart';
+import 'services/read_tracker.dart';
 
-void main() {
+void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await ReadTracker.instance.init();
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.light,
