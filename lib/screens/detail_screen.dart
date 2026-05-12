@@ -421,13 +421,14 @@ class _DetailedExplanationSectionState
             ),
           ),
         ),
-        // Açılır içerik
-        AnimatedCrossFade(
-          duration: const Duration(milliseconds: 280),
-          crossFadeState:
-              _open ? CrossFadeState.showSecond : CrossFadeState.showFirst,
-          firstChild: const SizedBox.shrink(),
-          secondChild: Padding(
+        // Açılır içerik — yukarıdan aşağı açılma
+        ClipRect(
+          child: AnimatedAlign(
+            alignment: Alignment.topCenter,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+            heightFactor: _open ? 1.0 : 0.0,
+            child: Padding(
             padding: const EdgeInsets.only(top: 16),
             child: Container(
               padding: const EdgeInsets.all(16),
@@ -476,6 +477,7 @@ class _DetailedExplanationSectionState
                 ],
               ),
             ),
+          ),
           ),
         ),
       ],
