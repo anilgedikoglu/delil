@@ -23,22 +23,43 @@ class AppColors {
   static const blue = Color(0xFF3A6EB0);
   static const amber = Color(0xFFD4851A);
 
+  static const rose    = Color(0xFFA0406A);
+  static const indigo  = Color(0xFF3A4AAA);
+  static const copper  = Color(0xFFA0603A);
+  static const lime    = Color(0xFF4A9A3A);
+  static const cyan    = Color(0xFF2A8A9A);
+  static const orange  = Color(0xFFB07020);
+
   static const Map<String, Color> categoryColors = {
-    'Felsefi ve Kelâmî Deliller': purple,
-    'Bilimsel ve Doğa Üzerinden Deliller': teal,
+    'Felsefi ve Kelâmî Deliller':                      purple,
+    'Bilimsel ve Doğa Üzerinden Deliller':             teal,
     'İman Hakikatleri ve Risale-i Nur Tarzı Deliller': amber,
-    'Fıtrat, Ahlak ve İnsan Delilleri': green,
-    'İtirazlar ve Cevap Kartları': red,
-    'Kâinat ve Günlük Hayat Delilleri': blue,
+    'Fıtrat, Ahlak ve İnsan Delilleri':                green,
+    'İtirazlar ve Cevap Kartları':                     red,
+    'Kâinat ve Günlük Hayat Delilleri':                blue,
+    // Yeni kategoriler
+    'Matematiksel ve Mantıksal Deliller':              orange,
+    'Biyolojik Deliller':                              lime,
+    'Fizik ve Kozmoloji Delilleri':                    cyan,
+    'Astronomi Delilleri':                             indigo,
+    'Estetik ve Anlam Delilleri':                      rose,
+    'Tarihî Deliller':                                 copper,
   };
 
   static const Map<String, Color> categoryColorsDim = {
-    'Felsefi ve Kelâmî Deliller': Color(0xFF3D2F6A),
-    'Bilimsel ve Doğa Üzerinden Deliller': Color(0xFF1D4D46),
+    'Felsefi ve Kelâmî Deliller':                      Color(0xFF3D2F6A),
+    'Bilimsel ve Doğa Üzerinden Deliller':             Color(0xFF1D4D46),
     'İman Hakikatleri ve Risale-i Nur Tarzı Deliller': Color(0xFF6A420D),
-    'Fıtrat, Ahlak ve İnsan Delilleri': Color(0xFF234D30),
-    'İtirazlar ve Cevap Kartları': Color(0xFF582828),
-    'Kâinat ve Günlük Hayat Delilleri': Color(0xFF1D3758),
+    'Fıtrat, Ahlak ve İnsan Delilleri':                Color(0xFF234D30),
+    'İtirazlar ve Cevap Kartları':                     Color(0xFF582828),
+    'Kâinat ve Günlük Hayat Delilleri':                Color(0xFF1D3758),
+    // Yeni kategoriler
+    'Matematiksel ve Mantıksal Deliller':              Color(0xFF583810),
+    'Biyolojik Deliller':                              Color(0xFF234D1D),
+    'Fizik ve Kozmoloji Delilleri':                    Color(0xFF15454D),
+    'Astronomi Delilleri':                             Color(0xFF1D2558),
+    'Estetik ve Anlam Delilleri':                      Color(0xFF502035),
+    'Tarihî Deliller':                                 Color(0xFF50301D),
   };
 
   static Color forCategory(String cat) =>
@@ -55,6 +76,12 @@ class AppIcons {
     'Fıtrat, Ahlak ve İnsan Delilleri': Icons.favorite_border,
     'İtirazlar ve Cevap Kartları': Icons.balance_outlined,
     'Kâinat ve Günlük Hayat Delilleri': Icons.nature_outlined,
+    'Matematiksel ve Mantıksal Deliller': Icons.calculate_outlined,
+    'Biyolojik Deliller': Icons.biotech_outlined,
+    'Fizik ve Kozmoloji Delilleri': Icons.bolt_outlined,
+    'Astronomi Delilleri': Icons.nights_stay_outlined,
+    'Estetik ve Anlam Delilleri': Icons.palette_outlined,
+    'Tarihî Deliller': Icons.history_edu_outlined,
   };
 
   static IconData forCategory(String cat) =>

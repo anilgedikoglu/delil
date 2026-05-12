@@ -20,7 +20,7 @@ class Delil {
     required this.expanded,
     required this.tags,
     required this.strength,
-    required this.sources,
+    this.sources = const [],
     this.objection = '',
     this.reply = '',
   });
