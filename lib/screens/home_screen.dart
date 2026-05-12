@@ -251,6 +251,7 @@ class _HomeScreenState extends State<HomeScreen> {
       case 'Fıtrat, Ahlak ve İnsan Delilleri': return 'Fıtrat & Ahlak';
       case 'İtirazlar ve Cevap Kartları': return 'İtiraz-Cevap';
       case 'Kâinat ve Günlük Hayat Delilleri': return 'Günlük Hayat';
+      case 'Zihin ve Bilinç Delilleri': return 'Zihin & Bilinç';
       default: return cat;
     }
   }

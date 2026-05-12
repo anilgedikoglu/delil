@@ -121,6 +121,13 @@ class _DetailScreenState extends State<DetailScreen> {
                       color: AppColors.textPrimary,
                     ),
                   ),
+                  if (delil.detailedExplanation != null) ...[
+                    const SizedBox(height: 20),
+                    _DetailedExplanationSection(
+                      detail: delil.detailedExplanation!,
+                      color: catColor,
+                    ),
+                  ],
                   if (delil.hasObjectionReply) ...[
                     const SizedBox(height: 28),
                     _ObjectionReplySection(delil: delil),
@@ -351,6 +358,172 @@ class _CategoryRow extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class _DetailedExplanationSection extends StatefulWidget {
+  final DetailedExplanation detail;
+  final Color color;
+  const _DetailedExplanationSection({required this.detail, required this.color});
+
+  @override
+  State<_DetailedExplanationSection> createState() =>
+      _DetailedExplanationSectionState();
+}
+
+class _DetailedExplanationSectionState
+    extends State<_DetailedExplanationSection> {
+  bool _open = false;
+
+  @override
+  Widget build(BuildContext context) {
+    final d = widget.detail;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        // Aşağı ok butonu — ortalı
+        Center(
+          child: GestureDetector(
+            onTap: () => setState(() => _open = !_open),
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 220),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 9),
+              decoration: BoxDecoration(
+                color: widget.color.withOpacity(0.10),
+                borderRadius: BorderRadius.circular(24),
+                border: Border.all(color: widget.color.withOpacity(0.30)),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    'Detaylı Açıklama',
+                    style: GoogleFonts.notoSans(
+                      fontSize: 12,
+                      fontWeight: FontWeight.w600,
+                      color: widget.color,
+                      letterSpacing: 0.4,
+                    ),
+                  ),
+                  const SizedBox(width: 6),
+                  AnimatedRotation(
+                    turns: _open ? 0.5 : 0.0,
+                    duration: const Duration(milliseconds: 220),
+                    child: Icon(
+                      Icons.keyboard_arrow_down_rounded,
+                      size: 18,
+                      color: widget.color,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+        // Açılır içerik
+        AnimatedCrossFade(
+          duration: const Duration(milliseconds: 280),
+          crossFadeState:
+              _open ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+          firstChild: const SizedBox.shrink(),
+          secondChild: Padding(
+            padding: const EdgeInsets.only(top: 16),
+            child: Container(
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: widget.color.withOpacity(0.06),
+                borderRadius: BorderRadius.circular(14),
+                border: Border.all(color: widget.color.withOpacity(0.20)),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (d.kaynakYeri.isNotEmpty)
+                    _DetailRow(
+                      icon: Icons.library_books_outlined,
+                      label: 'Kaynak',
+                      text: d.kaynakYeri,
+                      color: widget.color,
+                    ),
+                  if (d.kaynakMetniVeyaCekirdekFormulasyon.isNotEmpty) ...[
+                    if (d.kaynakYeri.isNotEmpty) const SizedBox(height: 12),
+                    _DetailRow(
+                      icon: Icons.format_quote_rounded,
+                      label: 'Çekirdek Formülasyon',
+                      text: d.kaynakMetniVeyaCekirdekFormulasyon,
+                      color: widget.color,
+                    ),
+                  ],
+                  if (d.nedenDelildir.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    _DetailRow(
+                      icon: Icons.lightbulb_outline,
+                      label: 'Neden Delildir?',
+                      text: d.nedenDelildir,
+                      color: widget.color,
+                    ),
+                  ],
+                  if (d.uygulamaNotu.isNotEmpty) ...[
+                    const SizedBox(height: 12),
+                    _DetailRow(
+                      icon: Icons.info_outline,
+                      label: 'Uygulama Notu',
+                      text: d.uygulamaNotu,
+                      color: widget.color,
+                    ),
+                  ],
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _DetailRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final String text;
+  final Color color;
+  const _DetailRow(
+      {required this.icon,
+      required this.label,
+      required this.text,
+      required this.color});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(icon, size: 13, color: color.withOpacity(0.8)),
+            const SizedBox(width: 5),
+            Text(
+              label,
+              style: GoogleFonts.notoSans(
+                fontSize: 10,
+                fontWeight: FontWeight.w700,
+                color: color.withOpacity(0.8),
+                letterSpacing: 0.5,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 5),
+        Text(
+          text,
+          style: GoogleFonts.notoSerif(
+            fontSize: 13,
+            color: AppColors.textSecondary,
+            height: 1.65,
+          ),
+        ),
+      ],
     );
   }
 }

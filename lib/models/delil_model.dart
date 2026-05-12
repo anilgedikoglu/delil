@@ -1,3 +1,17 @@
+class DetailedExplanation {
+  final String kaynakYeri;
+  final String kaynakMetniVeyaCekirdekFormulasyon;
+  final String nedenDelildir;
+  final String uygulamaNotu;
+
+  const DetailedExplanation({
+    this.kaynakYeri = '',
+    this.kaynakMetniVeyaCekirdekFormulasyon = '',
+    this.nedenDelildir = '',
+    this.uygulamaNotu = '',
+  });
+}
+
 class Delil {
   final String id;
   final String category;
@@ -10,6 +24,7 @@ class Delil {
   final List<String> sources;
   final String objection;
   final String reply;
+  final DetailedExplanation? detailedExplanation;
 
   const Delil({
     required this.id,
@@ -23,6 +38,7 @@ class Delil {
     this.sources = const [],
     this.objection = '',
     this.reply = '',
+    this.detailedExplanation,
   });
 
   bool get hasObjectionReply => objection.isNotEmpty && reply.isNotEmpty;

@@ -30,6 +30,8 @@ class AppColors {
   static const cyan    = Color(0xFF2A8A9A);
   static const orange  = Color(0xFFB07020);
 
+  static const tealLight = Color(0xFF4AB8A8);
+
   static const Map<String, Color> categoryColors = {
     'Felsefi ve Kelâmî Deliller':                      purple,
     'Bilimsel ve Doğa Üzerinden Deliller':             teal,
@@ -37,13 +39,13 @@ class AppColors {
     'Fıtrat, Ahlak ve İnsan Delilleri':                green,
     'İtirazlar ve Cevap Kartları':                     red,
     'Kâinat ve Günlük Hayat Delilleri':                blue,
-    // Yeni kategoriler
     'Matematiksel ve Mantıksal Deliller':              orange,
     'Biyolojik Deliller':                              lime,
     'Fizik ve Kozmoloji Delilleri':                    cyan,
     'Astronomi Delilleri':                             indigo,
     'Estetik ve Anlam Delilleri':                      rose,
     'Tarihî Deliller':                                 copper,
+    'Zihin ve Bilinç Delilleri':                       tealLight,
   };
 
   static const Map<String, Color> categoryColorsDim = {
@@ -53,13 +55,13 @@ class AppColors {
     'Fıtrat, Ahlak ve İnsan Delilleri':                Color(0xFF234D30),
     'İtirazlar ve Cevap Kartları':                     Color(0xFF582828),
     'Kâinat ve Günlük Hayat Delilleri':                Color(0xFF1D3758),
-    // Yeni kategoriler
     'Matematiksel ve Mantıksal Deliller':              Color(0xFF583810),
     'Biyolojik Deliller':                              Color(0xFF234D1D),
     'Fizik ve Kozmoloji Delilleri':                    Color(0xFF15454D),
     'Astronomi Delilleri':                             Color(0xFF1D2558),
     'Estetik ve Anlam Delilleri':                      Color(0xFF502035),
     'Tarihî Deliller':                                 Color(0xFF50301D),
+    'Zihin ve Bilinç Delilleri':                       Color(0xFF1D4A48),
   };
 
   static Color forCategory(String cat) =>
@@ -82,6 +84,7 @@ class AppIcons {
     'Astronomi Delilleri': Icons.nights_stay_outlined,
     'Estetik ve Anlam Delilleri': Icons.palette_outlined,
     'Tarihî Deliller': Icons.history_edu_outlined,
+    'Zihin ve Bilinç Delilleri': Icons.psychology_outlined,
   };
 
   static IconData forCategory(String cat) =>
