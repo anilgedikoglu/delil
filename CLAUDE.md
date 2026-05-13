@@ -124,6 +124,10 @@ Nested `ValueListenableBuilder` ile reaktif güncelleme.
 
 Tüm renkler: `AppColors.gold` (#D4A017)
 
+## Faydalı Araçlar
+- **Play Store görselleri (screenshot, feature graphic):** https://www.launchshots.com/
+- **Google Play Console uygulama silme işlem kimliği:** PDS.8886-0977-0480-55544
+
 ## Release İmzalama
 - **Keystore:** `C:\src\delil\delil.jks` (repo'da mevcut)
 - **Signing config:** `android/key.properties` (repo'da mevcut)
