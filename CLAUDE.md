@@ -124,6 +124,14 @@ Nested `ValueListenableBuilder` ile reaktif güncelleme.
 
 Tüm renkler: `AppColors.gold` (#D4A017)
 
+## Release İmzalama
+- **Keystore:** `C:\src\delil\delil.jks` (repo'da mevcut)
+- **Signing config:** `android/key.properties` (repo'da mevcut)
+- **Alias:** `delil`
+- **AAB build:** `C:\flutter\bin\flutter.bat build appbundle --release`
+- **Çıktı:** `build\app\outputs\bundle\release\app-release.aab`
+- **Play Store son sürüm:** versionCode 4, versionName 1.2.0
+
 ## Emülatör Komutları
 ```bash
 # Emülatörü başlat
