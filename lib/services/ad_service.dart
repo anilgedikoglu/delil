@@ -13,7 +13,7 @@ class AdService {
   // AdMob Console → Uygulamalar → DELİL → Reklam birimleri → Interstitial
   // AndroidManifest.xml'deki APPLICATION_ID'yi de değiştirmeyi unutma!
   static const String _adUnitId =
-      'ca-app-pub-3940256099942544/1033173712'; // ← TEST ID
+      'ca-app-pub-6470338276121414/8002655354'; // gecisDelil
   // ──────────────────────────────────────────────────────────────────────────
 
   static const int _showEvery = 5; // kaç kartta bir reklam
