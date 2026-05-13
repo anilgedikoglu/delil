@@ -5,6 +5,7 @@ import '../data/sources_data.dart';
 import '../theme/app_theme.dart';
 import '../widgets/strength_badge.dart';
 import '../services/read_tracker.dart';
+import '../services/time_tracker.dart';
 
 class DetailScreen extends StatefulWidget {
   final Delil delil;
@@ -20,6 +21,13 @@ class _DetailScreenState extends State<DetailScreen> {
   void initState() {
     super.initState();
     ReadTracker.instance.markRead(widget.delil.id);
+    TimeTracker.instance.startSession('delil');
+  }
+
+  @override
+  void dispose() {
+    TimeTracker.instance.endSession('delil');
+    super.dispose();
   }
 
   Delil get delil => widget.delil;

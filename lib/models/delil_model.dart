@@ -61,10 +61,14 @@ class DelilSource {
   final String code;
   final String title;
   final String url;
+  final String module; // 'DELİLLER' | 'MUCİZELER' | 'CEVAPLAR' | 'SÖZLER'
+  final String description;
 
   const DelilSource({
     required this.code,
     required this.title,
     required this.url,
+    this.module = 'DELİLLER',
+    this.description = '',
   });
 }

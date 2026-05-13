@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import '../data/mucize_data.dart';
 import '../theme/app_theme.dart';
 import '../widgets/mucize_card_widget.dart';
+import '../widgets/marquee_title.dart';
 import 'mucize_detail_screen.dart';
 
 class MucizeCategoryScreen extends StatefulWidget {
@@ -21,6 +22,7 @@ class _MucizeCategoryScreenState extends State<MucizeCategoryScreen> {
     final mucizeler = getMucizeByCategory(widget.category);
     final color     = MucizeColors.forCategory(widget.category);
     final icon      = MucizeColors.iconForCategory(widget.category);
+    // subcategory grouping
     final subcats   = mucizeler.map((m) => m.subcategory).toSet().toList();
 
     return Scaffold(
@@ -41,14 +43,13 @@ class _MucizeCategoryScreenState extends State<MucizeCategoryScreen> {
                 Icon(icon, color: color, size: 20),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(
-                    widget.category,
+                  child: MarqueeTitle(
+                    text: widget.category,
                     style: GoogleFonts.notoSerif(
                       fontSize: 16,
                       fontWeight: FontWeight.w700,
                       color: AppColors.textPrimary,
                     ),
-                    overflow: TextOverflow.ellipsis,
                   ),
                 ),
               ],

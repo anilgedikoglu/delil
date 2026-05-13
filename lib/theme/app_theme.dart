@@ -93,30 +93,48 @@ class AppIcons {
 
 class MucizeColors {
   static const Map<String, Color> categoryColors = {
-    'Kur\'an Mucizeleri':                            AppColors.amber,
-    'Hz. Muhammed\'in Mucizeleri':                   AppColors.green,
-    'Peygamberler ve Kur\'an Kıssaları':             AppColors.purple,
-    'İslam\'ın Hikmet ve Medeniyet Mucizeleri':      AppColors.teal,
+    'Kur\'an\'ın metin, belagat ve korunma mucizeleri':            AppColors.tealLight,
+    'Astronomi ve kozmoloji mucizeleri':                           AppColors.indigo,
+    'Fizik, kimya ve element mucizeleri':                          AppColors.orange,
+    'Yerbilim, atmosfer, meteoroloji ve okyanus mucizeleri':       AppColors.cyan,
+    'Biyoloji, embriyoloji, tıp ve insan bedeni mucizeleri':       AppColors.green,
+    'Hayvanlar, bitkiler ve ekoloji mucizeleri':                   AppColors.lime,
+    'Matematiksel, istatistiksel ve şifre mucizeleri':             AppColors.purple,
+    'Tarihsel, arkeolojik ve haber mucizeleri':                    AppColors.copper,
+    'Hadislerde gelecek haberleri ve sosyal-teknolojik işaretler': AppColors.amber,
+    'İbadet, hüküm, ahlak ve yaşam hikmetleri':                   AppColors.rose,
   };
 
   static const Map<String, Color> categoryColorsDim = {
-    'Kur\'an Mucizeleri':                            Color(0xFF6A420D),
-    'Hz. Muhammed\'in Mucizeleri':                   Color(0xFF234D30),
-    'Peygamberler ve Kur\'an Kıssaları':             Color(0xFF3D2F6A),
-    'İslam\'ın Hikmet ve Medeniyet Mucizeleri':      Color(0xFF1D4D46),
+    'Kur\'an\'ın metin, belagat ve korunma mucizeleri':            Color(0xFF1D4A48),
+    'Astronomi ve kozmoloji mucizeleri':                           Color(0xFF1D2558),
+    'Fizik, kimya ve element mucizeleri':                          Color(0xFF583810),
+    'Yerbilim, atmosfer, meteoroloji ve okyanus mucizeleri':       Color(0xFF15454D),
+    'Biyoloji, embriyoloji, tıp ve insan bedeni mucizeleri':       Color(0xFF234D30),
+    'Hayvanlar, bitkiler ve ekoloji mucizeleri':                   Color(0xFF234D1D),
+    'Matematiksel, istatistiksel ve şifre mucizeleri':             Color(0xFF3D2F6A),
+    'Tarihsel, arkeolojik ve haber mucizeleri':                    Color(0xFF50301D),
+    'Hadislerde gelecek haberleri ve sosyal-teknolojik işaretler': Color(0xFF6A420D),
+    'İbadet, hüküm, ahlak ve yaşam hikmetleri':                   Color(0xFF502035),
   };
 
   static const Map<String, IconData> categoryIcons = {
-    'Kur\'an Mucizeleri':                            Icons.menu_book_outlined,
-    'Hz. Muhammed\'in Mucizeleri':                   Icons.star_outline_rounded,
-    'Peygamberler ve Kur\'an Kıssaları':             Icons.history_edu_outlined,
-    'İslam\'ın Hikmet ve Medeniyet Mucizeleri':      Icons.lightbulb_outline,
+    'Kur\'an\'ın metin, belagat ve korunma mucizeleri':            Icons.menu_book_outlined,
+    'Astronomi ve kozmoloji mucizeleri':                           Icons.nights_stay_outlined,
+    'Fizik, kimya ve element mucizeleri':                          Icons.science_outlined,
+    'Yerbilim, atmosfer, meteoroloji ve okyanus mucizeleri':       Icons.terrain_outlined,
+    'Biyoloji, embriyoloji, tıp ve insan bedeni mucizeleri':       Icons.favorite_border,
+    'Hayvanlar, bitkiler ve ekoloji mucizeleri':                   Icons.eco_outlined,
+    'Matematiksel, istatistiksel ve şifre mucizeleri':             Icons.calculate_outlined,
+    'Tarihsel, arkeolojik ve haber mucizeleri':                    Icons.history_edu_outlined,
+    'Hadislerde gelecek haberleri ve sosyal-teknolojik işaretler': Icons.format_quote_outlined,
+    'İbadet, hüküm, ahlak ve yaşam hikmetleri':                   Icons.self_improvement_outlined,
   };
 
   static Color forCategory(String cat) =>
-      categoryColors[cat] ?? AppColors.amber;
+      categoryColors[cat] ?? AppColors.tealLight;
   static Color dimForCategory(String cat) =>
-      categoryColorsDim[cat] ?? const Color(0xFF6A420D);
+      categoryColorsDim[cat] ?? const Color(0xFF1D4A48);
   static IconData iconForCategory(String cat) =>
       categoryIcons[cat] ?? Icons.star_outline_rounded;
 
@@ -145,6 +163,159 @@ class MucizeColors {
     if (t.contains('manevi'))      return 'Manevî';
     if (t.contains('kıssa'))       return 'Kıssa';
     if (t.contains('tartışmalı') || t.contains('numerik')) return 'Tartışmalı';
+    return t;
+  }
+}
+
+// ── Cevaplar renk/ikon sistemi ────────────────────────────────────────────────
+class CevapColors {
+  static const Map<String, Color> sectionColors = {
+    'Metafizik, Kozmoloji ve İlk Sebep':                             AppColors.purple,
+    'Bilim, Fizik ve Kozmoloji İtirazları':                          AppColors.indigo,
+    'Evrim, Biyoloji ve Canlılık Soruları':                          AppColors.green,
+    'Kötülük, Acı, Doğal Afet ve Çocuk Soruları':                   AppColors.red,
+    "Kur'an, Vahiy, Mucize ve Metin Eleştirisi":                     AppColors.tealLight,
+    'Hadis, Sünnet, Peygamberlik ve Tarih':                          AppColors.amber,
+    'Ahlak, Adalet, Özgür İrade ve Sorumluluk':                      AppColors.orange,
+    'Dinler, Mezhepler, Çoğulculuk ve Kurtuluş':                     AppColors.copper,
+    'Psikoloji, Dinî Tecrübe, Dua ve Fıtrat':                        AppColors.cyan,
+    'Modern Şüpheler: Deizm, Ateizm, Simülasyon, Yapay Zekâ':       AppColors.lime,
+  };
+
+  static const Map<String, Color> sectionColorsDim = {
+    'Metafizik, Kozmoloji ve İlk Sebep':                             Color(0xFF3D2F6A),
+    'Bilim, Fizik ve Kozmoloji İtirazları':                          Color(0xFF1D2558),
+    'Evrim, Biyoloji ve Canlılık Soruları':                          Color(0xFF234D30),
+    'Kötülük, Acı, Doğal Afet ve Çocuk Soruları':                   Color(0xFF582828),
+    "Kur'an, Vahiy, Mucize ve Metin Eleştirisi":                     Color(0xFF1D4A48),
+    'Hadis, Sünnet, Peygamberlik ve Tarih':                          Color(0xFF6A420D),
+    'Ahlak, Adalet, Özgür İrade ve Sorumluluk':                      Color(0xFF583810),
+    'Dinler, Mezhepler, Çoğulculuk ve Kurtuluş':                     Color(0xFF50301D),
+    'Psikoloji, Dinî Tecrübe, Dua ve Fıtrat':                        Color(0xFF15454D),
+    'Modern Şüpheler: Deizm, Ateizm, Simülasyon, Yapay Zekâ':       Color(0xFF234D1D),
+  };
+
+  static const Map<String, IconData> sectionIcons = {
+    'Metafizik, Kozmoloji ve İlk Sebep':                             Icons.auto_awesome_outlined,
+    'Bilim, Fizik ve Kozmoloji İtirazları':                          Icons.science_outlined,
+    'Evrim, Biyoloji ve Canlılık Soruları':                          Icons.biotech_outlined,
+    'Kötülük, Acı, Doğal Afet ve Çocuk Soruları':                   Icons.thunderstorm_outlined,
+    "Kur'an, Vahiy, Mucize ve Metin Eleştirisi":                     Icons.menu_book_outlined,
+    'Hadis, Sünnet, Peygamberlik ve Tarih':                          Icons.history_edu_outlined,
+    'Ahlak, Adalet, Özgür İrade ve Sorumluluk':                      Icons.balance_outlined,
+    'Dinler, Mezhepler, Çoğulculuk ve Kurtuluş':                     Icons.diversity_3_outlined,
+    'Psikoloji, Dinî Tecrübe, Dua ve Fıtrat':                        Icons.psychology_outlined,
+    'Modern Şüpheler: Deizm, Ateizm, Simülasyon, Yapay Zekâ':       Icons.computer_outlined,
+  };
+
+  static Color forSection(String s) =>
+      sectionColors[s] ?? AppColors.purple;
+  static Color dimForSection(String s) =>
+      sectionColorsDim[s] ?? const Color(0xFF3D2F6A);
+  static IconData iconForSection(String s) =>
+      sectionIcons[s] ?? Icons.question_answer_outlined;
+
+  // askerProfile badge rengi
+  static Color forProfile(String p) {
+    if (p.contains('ateist'))      return AppColors.red;
+    if (p.contains('deist'))       return AppColors.orange;
+    if (p.contains('agnostik'))    return AppColors.cyan;
+    if (p.contains('çocuk'))       return AppColors.lime;
+    if (p.contains('felsefe'))     return AppColors.purple;
+    if (p.contains('Müslüman'))    return AppColors.tealLight;
+    return AppColors.textMuted;
+  }
+
+  // difficulty badge rengi
+  static Color forDifficulty(String d) {
+    if (d.contains('çok zor'))     return AppColors.red;
+    if (d.contains('hassas'))      return AppColors.rose;
+    if (d.contains('ileri'))       return AppColors.purple;
+    if (d.contains('tricky'))      return AppColors.amber;
+    return AppColors.textMuted;
+  }
+
+  // difficulty kısa etiket
+  static String labelForDifficulty(String d) {
+    if (d.contains('çok zor'))     return 'Çok Zor';
+    if (d.contains('hassas'))      return 'Hassas';
+    if (d.contains('ileri'))       return 'İleri';
+    if (d.contains('tricky'))      return 'Tricky';
+    if (d.contains('zor'))         return 'Zor';
+    return d;
+  }
+
+  // askerProfile kısa etiket
+  static String labelForProfile(String p) {
+    if (p.contains('ateist'))      return 'Ateist';
+    if (p.contains('deist'))       return 'Deist';
+    if (p.contains('agnostik'))    return 'Agnostik';
+    if (p.contains('çocuk'))       return 'Çocuk/Ergen';
+    if (p.contains('felsefe'))     return 'Felsefeci';
+    if (p.contains('Müslüman'))    return 'Meraklı';
+    return p;
+  }
+}
+
+// ── Sözler renk/ikon sistemi ─────────────────────────────────────────────────
+class SozColors {
+  static const Map<String, Color> catColors = {
+    'Filozoflar & Metafizikçiler':                          AppColors.purple,
+    'Bilim İnsanları & Matematikçiler':                     AppColors.indigo,
+    'İslam Âlimleri & Mütefekkirler':                       AppColors.tealLight,
+    'Hristiyan-Yahudi Düşünürler & Apolojistler':           AppColors.amber,
+    'Yazarlar, Şairler & Sanatçılar':                       AppColors.rose,
+    'Siyasetçiler, Liderler & Toplum Önderleri':            AppColors.copper,
+    'Eski Ateistler, Şüpheciler & Dönüşüm Hikâyeleri':     AppColors.red,
+    'Sporcular & Popüler Kültür Figürleri':                 AppColors.lime,
+    'Ahlak, Psikoloji & İnsan Doğası Üzerine Söyleyenler': AppColors.cyan,
+    'Karşıt Sesler, Eleştirmenler & Düşündürenler':         AppColors.orange,
+  };
+
+  static const Map<String, Color> catColorsDim = {
+    'Filozoflar & Metafizikçiler':                          Color(0xFF3D2F6A),
+    'Bilim İnsanları & Matematikçiler':                     Color(0xFF1D2558),
+    'İslam Âlimleri & Mütefekkirler':                       Color(0xFF1D4A48),
+    'Hristiyan-Yahudi Düşünürler & Apolojistler':           Color(0xFF6A420D),
+    'Yazarlar, Şairler & Sanatçılar':                       Color(0xFF5A2035),
+    'Siyasetçiler, Liderler & Toplum Önderleri':            Color(0xFF50301D),
+    'Eski Ateistler, Şüpheciler & Dönüşüm Hikâyeleri':     Color(0xFF582828),
+    'Sporcular & Popüler Kültür Figürleri':                 Color(0xFF234D1D),
+    'Ahlak, Psikoloji & İnsan Doğası Üzerine Söyleyenler': Color(0xFF15454D),
+    'Karşıt Sesler, Eleştirmenler & Düşündürenler':         Color(0xFF583810),
+  };
+
+  static const Map<String, IconData> catIcons = {
+    'Filozoflar & Metafizikçiler':                          Icons.auto_awesome_outlined,
+    'Bilim İnsanları & Matematikçiler':                     Icons.science_outlined,
+    'İslam Âlimleri & Mütefekkirler':                       Icons.menu_book_outlined,
+    'Hristiyan-Yahudi Düşünürler & Apolojistler':           Icons.account_balance_outlined,
+    'Yazarlar, Şairler & Sanatçılar':                       Icons.draw_outlined,
+    'Siyasetçiler, Liderler & Toplum Önderleri':            Icons.how_to_vote_outlined,
+    'Eski Ateistler, Şüpheciler & Dönüşüm Hikâyeleri':     Icons.change_circle_outlined,
+    'Sporcular & Popüler Kültür Figürleri':                 Icons.emoji_events_outlined,
+    'Ahlak, Psikoloji & İnsan Doğası Üzerine Söyleyenler': Icons.favorite_outline,
+    'Karşıt Sesler, Eleştirmenler & Düşündürenler':         Icons.record_voice_over_outlined,
+  };
+
+  static Color forCategory(String c) =>
+      catColors[c] ?? AppColors.purple;
+  static Color dimForCategory(String c) =>
+      catColorsDim[c] ?? const Color(0xFF3D2F6A);
+  static IconData iconForCategory(String c) =>
+      catIcons[c] ?? Icons.format_quote_outlined;
+
+  // quoteType badge
+  static Color forQuoteType(String t) {
+    if (t.contains('doğrudan')) return AppColors.green;
+    if (t.contains('atfedilen')) return AppColors.amber;
+    return AppColors.textMuted;
+  }
+
+  static String labelForQuoteType(String t) {
+    if (t.contains('doğrudan')) return 'Alıntı';
+    if (t.contains('atfedilen')) return 'Atıf';
+    if (t.contains('görüş')) return 'Görüş';
     return t;
   }
 }

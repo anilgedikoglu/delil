@@ -1,39 +1,41 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../models/mucize_model.dart';
+import '../models/cevap_model.dart';
 import '../theme/app_theme.dart';
 import '../services/read_tracker.dart';
 import '../services/time_tracker.dart';
 
-class MucizeDetailScreen extends StatefulWidget {
-  final Mucize mucize;
-  const MucizeDetailScreen({super.key, required this.mucize});
+class CevapDetailScreen extends StatefulWidget {
+  final Cevap cevap;
+  const CevapDetailScreen({super.key, required this.cevap});
 
   @override
-  State<MucizeDetailScreen> createState() => _MucizeDetailScreenState();
+  State<CevapDetailScreen> createState() => _CevapDetailScreenState();
 }
 
-class _MucizeDetailScreenState extends State<MucizeDetailScreen> {
+class _CevapDetailScreenState extends State<CevapDetailScreen> {
   @override
   void initState() {
     super.initState();
-    ReadTracker.instance.markRead(widget.mucize.id);
-    TimeTracker.instance.startSession('mucize');
+    ReadTracker.instance.markRead(widget.cevap.id);
+    TimeTracker.instance.startSession('cevap');
   }
 
   @override
   void dispose() {
-    TimeTracker.instance.endSession('mucize');
+    TimeTracker.instance.endSession('cevap');
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final mucize    = widget.mucize;
-    final catColor  = MucizeColors.forCategory(mucize.mainCategory);
-    final catIcon   = MucizeColors.iconForCategory(mucize.mainCategory);
-    final typeColor = MucizeColors.forMiracleType(mucize.miracleType);
-    final typeLabel = MucizeColors.labelForMiracleType(mucize.miracleType);
+    final c        = widget.cevap;
+    final secColor = CevapColors.forSection(c.section);
+    final secIcon  = CevapColors.iconForSection(c.section);
+    final diffColor = CevapColors.forDifficulty(c.difficulty);
+    final diffLabel = CevapColors.labelForDifficulty(c.difficulty);
+    final profColor = CevapColors.forProfile(c.askerProfile);
+    final profLabel = CevapColors.labelForProfile(c.askerProfile);
 
     return Scaffold(
       backgroundColor: AppColors.background,
@@ -62,10 +64,10 @@ class _MucizeDetailScreenState extends State<MucizeDetailScreen> {
                     Container(
                       padding: const EdgeInsets.all(8),
                       decoration: BoxDecoration(
-                        color: catColor.withOpacity(0.2),
+                        color: secColor.withOpacity(0.2),
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Icon(catIcon, color: catColor, size: 18),
+                      child: Icon(secIcon, color: secColor, size: 18),
                     ),
                     const SizedBox(width: 10),
                     Expanded(
@@ -74,16 +76,16 @@ class _MucizeDetailScreenState extends State<MucizeDetailScreen> {
                         mainAxisSize: MainAxisSize.min,
                         children: [
                           Text(
-                            mucize.id,
+                            c.id,
                             style: GoogleFonts.notoSans(
                               fontSize: 10,
-                              color: catColor.withOpacity(0.8),
+                              color: secColor.withOpacity(0.8),
                               letterSpacing: 1.2,
                               fontWeight: FontWeight.w600,
                             ),
                           ),
                           Text(
-                            mucize.title,
+                            c.title,
                             style: GoogleFonts.notoSerif(
                               fontSize: 15,
                               fontWeight: FontWeight.w800,
@@ -97,19 +99,19 @@ class _MucizeDetailScreenState extends State<MucizeDetailScreen> {
                       ),
                     ),
                     const SizedBox(width: 8),
-                    if (typeLabel.isNotEmpty)
+                    if (diffLabel.isNotEmpty)
                       Container(
                         padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                         decoration: BoxDecoration(
-                          color: typeColor.withOpacity(0.12),
+                          color: diffColor.withOpacity(0.12),
                           borderRadius: BorderRadius.circular(10),
-                          border: Border.all(color: typeColor.withOpacity(0.30)),
+                          border: Border.all(color: diffColor.withOpacity(0.30)),
                         ),
                         child: Text(
-                          typeLabel,
+                          diffLabel,
                           style: GoogleFonts.notoSans(
                             fontSize: 9,
-                            color: typeColor,
+                            color: diffColor,
                             fontWeight: FontWeight.w700,
                           ),
                         ),
@@ -128,28 +130,27 @@ class _MucizeDetailScreenState extends State<MucizeDetailScreen> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
 
-                  // ── Kaynak & Orijinal İfade ───────────────────────────
-                  if (mucize.sourceRef.isNotEmpty || mucize.originalExpression.isNotEmpty)
-                    _SourceBox(
-                      ref: mucize.sourceRef,
-                      originalExpression: mucize.originalExpression,
-                      color: catColor,
-                    ),
-                  if (mucize.sourceRef.isNotEmpty || mucize.originalExpression.isNotEmpty)
-                    const SizedBox(height: 20),
+                  // ── Soru kutusu ───────────────────────────────────────
+                  _QuestionBox(
+                    question: c.question,
+                    profile: profLabel,
+                    profileColor: profColor,
+                    sectionColor: secColor,
+                  ),
+                  const SizedBox(height: 20),
 
-                  // ── Mucize / İşaret ───────────────────────────────────
-                  _SectionTitle('Mucize / İşaret'),
+                  // ── Kısa Cevap ────────────────────────────────────────
+                  _SectionTitle('Kısa Cevap'),
                   const SizedBox(height: 10),
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: catColor.withOpacity(0.07),
+                      color: secColor.withOpacity(0.07),
                       borderRadius: BorderRadius.circular(12),
-                      border: Border(left: BorderSide(color: catColor, width: 3)),
+                      border: Border(left: BorderSide(color: secColor, width: 3)),
                     ),
                     child: Text(
-                      mucize.claim,
+                      c.shortAnswer,
                       style: GoogleFonts.notoSerif(
                         fontSize: 15.5,
                         height: 1.65,
@@ -159,12 +160,12 @@ class _MucizeDetailScreenState extends State<MucizeDetailScreen> {
                     ),
                   ),
 
-                  // ── Açıklama ──────────────────────────────────────────
+                  // ── Cevap ─────────────────────────────────────────────
                   const SizedBox(height: 24),
-                  _SectionTitle('Açıklama'),
+                  _SectionTitle('Cevap'),
                   const SizedBox(height: 10),
                   Text(
-                    mucize.shortExplanation,
+                    c.answer,
                     style: GoogleFonts.notoSerif(
                       fontSize: 15,
                       height: 1.75,
@@ -173,36 +174,59 @@ class _MucizeDetailScreenState extends State<MucizeDetailScreen> {
                   ),
 
                   // ── Detaylı Açıklama (expandable) ─────────────────────
-                  if (mucize.detailedExplanation != null) ...[
+                  if (c.detailedExplanation != null) ...[
                     const SizedBox(height: 20),
-                    _MucizeDetailedExplanationSection(
-                      detail: mucize.detailedExplanation!,
-                      color: catColor,
+                    _CevapDetailedSection(
+                      detail: c.detailedExplanation!,
+                      color: secColor,
                     ),
                   ],
 
                   // ── Etiketler ─────────────────────────────────────────
-                  if (mucize.tags.isNotEmpty) ...[
+                  if (c.tags.isNotEmpty) ...[
                     const SizedBox(height: 24),
                     _SectionTitle('Etiketler'),
                     const SizedBox(height: 10),
                     Wrap(
                       spacing: 8,
                       runSpacing: 6,
-                      children: mucize.tags.map((tag) => Container(
+                      children: c.tags.map((tag) => Container(
                         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 5),
                         decoration: BoxDecoration(
-                          color: catColor.withOpacity(0.12),
+                          color: secColor.withOpacity(0.12),
                           borderRadius: BorderRadius.circular(20),
-                          border: Border.all(color: catColor.withOpacity(0.3)),
+                          border: Border.all(color: secColor.withOpacity(0.3)),
                         ),
                         child: Text(tag,
-                            style: GoogleFonts.notoSans(fontSize: 12, color: catColor)),
+                            style: GoogleFonts.notoSans(fontSize: 12, color: secColor)),
                       )).toList(),
                     ),
                   ],
 
-                  // ── Kategori satırı ───────────────────────────────────
+                  // ── Kaynaklar ─────────────────────────────────────────
+                  if (c.sources.isNotEmpty) ...[
+                    const SizedBox(height: 24),
+                    _SectionTitle('Kaynaklar'),
+                    const SizedBox(height: 10),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 6,
+                      children: c.sources.map((src) => Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        decoration: BoxDecoration(
+                          color: AppColors.surface,
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: AppColors.cardBorder),
+                        ),
+                        child: Text(src,
+                          style: GoogleFonts.notoSans(
+                              fontSize: 11, color: AppColors.textSecondary,
+                              fontWeight: FontWeight.w600)),
+                      )).toList(),
+                    ),
+                  ],
+
+                  // ── Bölüm satırı ──────────────────────────────────────
                   const SizedBox(height: 24),
                   Container(
                     padding: const EdgeInsets.all(14),
@@ -212,20 +236,22 @@ class _MucizeDetailScreenState extends State<MucizeDetailScreen> {
                     ),
                     child: Row(
                       children: [
-                        Icon(catIcon, color: catColor, size: 18),
+                        Icon(secIcon, color: secColor, size: 18),
                         const SizedBox(width: 10),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              Text(mucize.mainCategory,
+                              Text(c.section,
                                 style: GoogleFonts.notoSans(
-                                    fontSize: 11, color: catColor,
+                                    fontSize: 11, color: secColor,
                                     fontWeight: FontWeight.w600)),
-                              if (mucize.subcategory.isNotEmpty)
-                                Text(mucize.subcategory,
+                              if (c.sectionDescription.isNotEmpty)
+                                Text(c.sectionDescription,
                                   style: GoogleFonts.notoSans(
-                                      fontSize: 11, color: AppColors.textMuted)),
+                                      fontSize: 10, color: AppColors.textMuted),
+                                  maxLines: 2,
+                                  overflow: TextOverflow.ellipsis),
                             ],
                           ),
                         ),
@@ -243,74 +269,63 @@ class _MucizeDetailScreenState extends State<MucizeDetailScreen> {
   }
 }
 
-// ── Kaynak & Orijinal İfade kutusu ────────────────────────────────────────────
-class _SourceBox extends StatelessWidget {
-  final String ref;
-  final String originalExpression;
-  final Color color;
-  const _SourceBox({required this.ref, required this.originalExpression, required this.color});
+// ── Soru kutusu ───────────────────────────────────────────────────────────────
+class _QuestionBox extends StatelessWidget {
+  final String question;
+  final String profile;
+  final Color profileColor;
+  final Color sectionColor;
+  const _QuestionBox({
+    required this.question,
+    required this.profile,
+    required this.profileColor,
+    required this.sectionColor,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.08),
+        color: sectionColor.withOpacity(0.08),
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(color: color.withOpacity(0.25)),
+        border: Border.all(color: sectionColor.withOpacity(0.25)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (ref.isNotEmpty)
-            Row(
-              children: [
-                Icon(Icons.menu_book_outlined, size: 14, color: color),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(ref, style: GoogleFonts.notoSans(
-                    fontSize: 12, fontWeight: FontWeight.w700,
-                    color: color, letterSpacing: 0.3,
-                  )),
-                ),
-              ],
-            ),
-          if (originalExpression.isNotEmpty) ...[
-            if (ref.isNotEmpty) const SizedBox(height: 10),
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: color.withOpacity(0.06),
-                borderRadius: BorderRadius.circular(10),
-                border: Border(left: BorderSide(color: color.withOpacity(0.6), width: 3)),
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    'ORİJİNAL İFADE',
+          Row(
+            children: [
+              Icon(Icons.help_outline_rounded, size: 14, color: sectionColor),
+              const SizedBox(width: 6),
+              Text('SORU', style: GoogleFonts.notoSans(
+                fontSize: 10, fontWeight: FontWeight.w700,
+                color: sectionColor, letterSpacing: 1,
+              )),
+              const Spacer(),
+              if (profile.isNotEmpty)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                  decoration: BoxDecoration(
+                    color: profileColor.withOpacity(0.12),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: profileColor.withOpacity(0.3)),
+                  ),
+                  child: Text(profile,
                     style: GoogleFonts.notoSans(
-                      fontSize: 9,
-                      color: color.withOpacity(0.7),
-                      fontWeight: FontWeight.w700,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
-                  const SizedBox(height: 6),
-                  Text(
-                    originalExpression,
-                    style: GoogleFonts.notoSerif(
-                      fontSize: 14.5,
-                      color: AppColors.textPrimary,
-                      height: 1.65,
-                      fontStyle: FontStyle.italic,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
+                        fontSize: 10, color: profileColor,
+                        fontWeight: FontWeight.w600)),
+                ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Text(question,
+            style: GoogleFonts.notoSerif(
+              fontSize: 15,
+              color: AppColors.textPrimary,
+              height: 1.6,
+              fontStyle: FontStyle.italic,
+            )),
         ],
       ),
     );
@@ -318,18 +333,16 @@ class _SourceBox extends StatelessWidget {
 }
 
 // ── Detaylı Açıklama (expandable) ─────────────────────────────────────────────
-class _MucizeDetailedExplanationSection extends StatefulWidget {
-  final MucizeDetailedExplanation detail;
+class _CevapDetailedSection extends StatefulWidget {
+  final CevapDetailedExplanation detail;
   final Color color;
-  const _MucizeDetailedExplanationSection({required this.detail, required this.color});
+  const _CevapDetailedSection({required this.detail, required this.color});
 
   @override
-  State<_MucizeDetailedExplanationSection> createState() =>
-      _MucizeDetailedExplanationSectionState();
+  State<_CevapDetailedSection> createState() => _CevapDetailedSectionState();
 }
 
-class _MucizeDetailedExplanationSectionState
-    extends State<_MucizeDetailedExplanationSection>
+class _CevapDetailedSectionState extends State<_CevapDetailedSection>
     with SingleTickerProviderStateMixin {
   bool _open = false;
   late final AnimationController _ctrl;
@@ -363,7 +376,6 @@ class _MucizeDetailedExplanationSectionState
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        // Toggle button
         GestureDetector(
           onTap: _toggle,
           child: Container(
@@ -378,15 +390,11 @@ class _MucizeDetailedExplanationSectionState
               children: [
                 Icon(Icons.layers_outlined, size: 14, color: color),
                 const SizedBox(width: 8),
-                Text(
-                  'Detaylı Açıklama',
+                Text('Detaylı Açıklama',
                   style: GoogleFonts.notoSans(
-                    fontSize: 12,
-                    fontWeight: FontWeight.w700,
-                    color: color,
-                    letterSpacing: 0.5,
-                  ),
-                ),
+                    fontSize: 12, fontWeight: FontWeight.w700,
+                    color: color, letterSpacing: 0.5,
+                  )),
                 const SizedBox(width: 6),
                 RotationTransition(
                   turns: _chevron,
@@ -396,7 +404,6 @@ class _MucizeDetailedExplanationSectionState
             ),
           ),
         ),
-        // Expandable content
         ClipRect(
           child: AnimatedAlign(
             duration: const Duration(milliseconds: 280),
@@ -408,6 +415,35 @@ class _MucizeDetailedExplanationSectionState
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
+                  if (d.orijinalMetinler.isNotEmpty) ...[
+                    _DetailRow(
+                      icon: Icons.format_quote_rounded,
+                      label: 'Temel Söylemler',
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: d.orijinalMetinler.map((m) => Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Text('• $m',
+                            style: GoogleFonts.notoSerif(
+                              fontSize: 13.5,
+                              color: AppColors.textSecondary,
+                              height: 1.6,
+                            )),
+                        )).toList(),
+                      ),
+                      color: color,
+                    ),
+                    const SizedBox(height: 10),
+                  ],
+                  if (d.cevabinDayanagi.isNotEmpty) ...[
+                    _DetailRow(
+                      icon: Icons.foundation_outlined,
+                      label: 'Cevabın Dayanağı',
+                      text: d.cevabinDayanagi,
+                      color: color,
+                    ),
+                    const SizedBox(height: 10),
+                  ],
                   if (d.detayliAciklama.isNotEmpty) ...[
                     _DetailRow(
                       icon: Icons.description_outlined,
@@ -417,21 +453,12 @@ class _MucizeDetailedExplanationSectionState
                     ),
                     const SizedBox(height: 10),
                   ],
-                  if (d.nedenVayBeDedirtiyor.isNotEmpty) ...[
+                  if (d.ornek.isNotEmpty) ...[
                     _DetailRow(
-                      icon: Icons.flash_on_rounded,
-                      label: 'Neden "Vay be" Dedirtiyor?',
-                      text: d.nedenVayBeDedirtiyor,
+                      icon: Icons.lightbulb_outline,
+                      label: 'Örnek Anlatım',
+                      text: d.ornek,
                       color: AppColors.gold,
-                    ),
-                    const SizedBox(height: 10),
-                  ],
-                  if (d.kaynakNotu.isNotEmpty) ...[
-                    _DetailRow(
-                      icon: Icons.bookmark_border_rounded,
-                      label: 'Kaynak Notu',
-                      text: d.kaynakNotu,
-                      color: color,
                     ),
                     const SizedBox(height: 10),
                   ],
@@ -455,12 +482,15 @@ class _MucizeDetailedExplanationSectionState
 class _DetailRow extends StatelessWidget {
   final IconData icon;
   final String label;
-  final String text;
+  final String? text;
+  final Widget? child;
   final Color color;
+
   const _DetailRow({
     required this.icon,
     required this.label,
-    required this.text,
+    this.text,
+    this.child,
     required this.color,
   });
 
@@ -482,20 +512,21 @@ class _DetailRow extends StatelessWidget {
               const SizedBox(width: 6),
               Text(label,
                 style: GoogleFonts.notoSans(
-                  fontSize: 10,
-                  color: color,
-                  fontWeight: FontWeight.w700,
-                  letterSpacing: 0.5,
+                  fontSize: 10, color: color,
+                  fontWeight: FontWeight.w700, letterSpacing: 0.5,
                 )),
             ],
           ),
           const SizedBox(height: 7),
-          Text(text,
-            style: GoogleFonts.notoSerif(
-              fontSize: 13.5,
-              color: AppColors.textSecondary,
-              height: 1.65,
-            )),
+          if (text != null)
+            Text(text!,
+              style: GoogleFonts.notoSerif(
+                fontSize: 13.5,
+                color: AppColors.textSecondary,
+                height: 1.65,
+              ))
+          else if (child != null)
+            child!,
         ],
       ),
     );

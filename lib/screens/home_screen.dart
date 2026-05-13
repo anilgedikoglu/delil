@@ -2,13 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import '../data/delil_data.dart';
 import '../data/mucize_data.dart';
+import '../data/cevap_data.dart';
+import '../data/soz_data.dart';
+import '../services/read_tracker.dart';
+import '../services/time_tracker.dart';
 import '../theme/app_theme.dart';
 import '../widgets/delil_card_widget.dart';
 import '../widgets/mucize_card_widget.dart';
+import '../widgets/cevap_card_widget.dart';
+import '../widgets/soz_card_widget.dart';
 import 'detail_screen.dart';
 import 'category_screen.dart';
 import 'mucize_category_screen.dart';
 import 'mucize_detail_screen.dart';
+import 'cevap_category_screen.dart';
+import 'cevap_detail_screen.dart';
+import 'soz_category_screen.dart';
+import 'soz_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -20,13 +30,17 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   late final List<dynamic> _recommended;
   late final List<dynamic> _recommendedMucize;
-  bool _showMucize = false;
+  late final List<dynamic> _recommendedCevap;
+  late final List<dynamic> _recommendedSoz;
+  int _activeTab = 0; // 0=Deliller 1=Mucizeler 2=Cevaplar 3=Sözler
 
   @override
   void initState() {
     super.initState();
     _recommended       = getRecommended();
     _recommendedMucize = getRecommendedMucize();
+    _recommendedCevap  = getRecommendedCevap();
+    _recommendedSoz    = getRecommendedSoz();
   }
 
   @override
@@ -67,9 +81,13 @@ class _HomeScreenState extends State<HomeScreen> {
                         color: AppColors.gold.withOpacity(0.08),
                       ),
                       child: Text(
-                        _showMucize
+                        _activeTab == 1
                             ? '${allMucizeler.length} Mucize'
-                            : '${allDeliller.length} Delil',
+                            : _activeTab == 2
+                                ? '${allCevaplar.length} Cevap'
+                                : _activeTab == 3
+                                    ? '${allSozler.length} Söz'
+                                    : '${allDeliller.length} Delil',
                         style: GoogleFonts.notoSans(
                           fontSize: 11,
                           color: AppColors.gold,
@@ -96,15 +114,29 @@ class _HomeScreenState extends State<HomeScreen> {
                 _TabButton(
                   label: 'DELİLLER',
                   icon: Icons.auto_stories_outlined,
-                  isActive: !_showMucize,
-                  onTap: () => setState(() => _showMucize = false),
+                  isActive: _activeTab == 0,
+                  onTap: () => setState(() => _activeTab = 0),
                 ),
                 Container(width: 0.5, height: 36, color: AppColors.cardBorder),
                 _TabButton(
                   label: 'MUCİZELER',
                   icon: Icons.star_outline_rounded,
-                  isActive: _showMucize,
-                  onTap: () => setState(() => _showMucize = true),
+                  isActive: _activeTab == 1,
+                  onTap: () => setState(() => _activeTab = 1),
+                ),
+                Container(width: 0.5, height: 36, color: AppColors.cardBorder),
+                _TabButton(
+                  label: 'CEVAPLAR',
+                  icon: Icons.question_answer_outlined,
+                  isActive: _activeTab == 2,
+                  onTap: () => setState(() => _activeTab = 2),
+                ),
+                Container(width: 0.5, height: 36, color: AppColors.cardBorder),
+                _TabButton(
+                  label: 'SÖZLER',
+                  icon: Icons.format_quote_rounded,
+                  isActive: _activeTab == 3,
+                  onTap: () => setState(() => _activeTab = 3),
                 ),
               ],
             ),
@@ -113,7 +145,7 @@ class _HomeScreenState extends State<HomeScreen> {
           // ── İÇERİK ───────────────────────────────────────────────────
           Expanded(
             child: IndexedStack(
-              index: _showMucize ? 1 : 0,
+              index: _activeTab,
               children: [
                 _DelillerContent(
                   recommended: _recommended,
@@ -122,6 +154,14 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
                 _MucizelerContent(
                   recommended: _recommendedMucize,
+                  onUpdate: () { if (mounted) setState(() {}); },
+                ),
+                _CevaplarContent(
+                  recommended: _recommendedCevap,
+                  onUpdate: () { if (mounted) setState(() {}); },
+                ),
+                _SozlerContent(
+                  recommended: _recommendedSoz,
                   onUpdate: () { if (mounted) setState(() {}); },
                 ),
               ],
@@ -182,17 +222,17 @@ class _TabButton extends StatelessWidget {
             children: [
               Icon(
                 icon,
-                size: 14,
+                size: 12,
                 color: isActive ? AppColors.gold : AppColors.textMuted,
               ),
-              const SizedBox(width: 6),
+              const SizedBox(width: 4),
               Text(
                 label,
                 style: GoogleFonts.notoSans(
-                  fontSize: 12,
+                  fontSize: 10,
                   fontWeight: isActive ? FontWeight.w700 : FontWeight.w500,
                   color: isActive ? AppColors.gold : AppColors.textMuted,
-                  letterSpacing: 0.8,
+                  letterSpacing: 0.5,
                 ),
               ),
             ],
@@ -307,7 +347,10 @@ class _DelillerContent extends StatelessWidget {
             ),
           ),
         ),
-        const SliverToBoxAdapter(child: SizedBox(height: 24)),
+        const SliverToBoxAdapter(
+          child: _BottomStatLine(
+            idPrefix: 'DELIL-', total: 117, module: 'delil'),
+        ),
       ],
     );
   }
@@ -415,8 +458,298 @@ class _MucizelerContent extends StatelessWidget {
             ),
           ),
         ),
-        const SliverToBoxAdapter(child: SizedBox(height: 24)),
+        const SliverToBoxAdapter(
+          child: _BottomStatLine(
+            idPrefix: 'MUCIZE-', total: 1000, module: 'mucize'),
+        ),
       ],
+    );
+  }
+}
+
+// ── Cevaplar İçeriği ──────────────────────────────────────────────────────────
+class _CevaplarContent extends StatelessWidget {
+  final List<dynamic> recommended;
+  final VoidCallback onUpdate;
+
+  const _CevaplarContent({
+    required this.recommended,
+    required this.onUpdate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+            child: Row(
+              children: [
+                const Icon(Icons.question_answer_outlined, color: AppColors.gold, size: 18),
+                const SizedBox(width: 8),
+                Text('Öne Çıkan 12 Cevap',
+                    style: GoogleFonts.notoSerif(
+                        fontSize: 16, fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary)),
+                const Spacer(),
+                Text('Seçki',
+                    style: GoogleFonts.notoSans(
+                        fontSize: 11, color: AppColors.textMuted)),
+              ],
+            ),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: SizedBox(
+            height: 248,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+              itemCount: recommended.length,
+              itemBuilder: (context, i) => CevapCardFeatured(
+                cevap: recommended[i],
+                index: i,
+                onTap: () async {
+                  await Navigator.push(context, MaterialPageRoute(
+                    builder: (_) => CevapDetailScreen(cevap: recommended[i]),
+                  ));
+                  onUpdate();
+                },
+              ),
+            ),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
+            child: Row(
+              children: [
+                const Icon(Icons.grid_view_rounded, color: AppColors.gold, size: 18),
+                const SizedBox(width: 8),
+                Text('Bölümler',
+                    style: GoogleFonts.notoSerif(
+                        fontSize: 16, fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary)),
+              ],
+            ),
+          ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          sliver: SliverGrid(
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1.55,
+            ),
+            delegate: SliverChildBuilderDelegate(
+              (context, i) {
+                final sec      = allCevapSections[i];
+                final count    = getCevapBySection(sec).length;
+                final color    = CevapColors.forSection(sec);
+                final dimColor = CevapColors.dimForSection(sec);
+                final icon     = CevapColors.iconForSection(sec);
+                return GestureDetector(
+                  onTap: () => Navigator.push(context, MaterialPageRoute(
+                    builder: (_) => CevapCategoryScreen(section: sec),
+                  )),
+                  child: _CategoryTile(
+                    name: sec,
+                    count: count,
+                    label: 'kart',
+                    color: color,
+                    dimColor: dimColor,
+                    icon: icon,
+                  ),
+                );
+              },
+              childCount: allCevapSections.length,
+            ),
+          ),
+        ),
+        const SliverToBoxAdapter(
+          child: _BottomStatLine(
+            idPrefix: 'CEVAP-', total: 1000, module: 'cevap'),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Sözler İçeriği ───────────────────────────────────────────────────────────
+class _SozlerContent extends StatelessWidget {
+  final List<dynamic> recommended;
+  final VoidCallback onUpdate;
+
+  const _SozlerContent({
+    required this.recommended,
+    required this.onUpdate,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return CustomScrollView(
+      slivers: [
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 0),
+            child: Row(
+              children: [
+                const Icon(Icons.format_quote_rounded,
+                    color: AppColors.gold, size: 18),
+                const SizedBox(width: 8),
+                Text('Öne Çıkan 12 Söz',
+                    style: GoogleFonts.notoSerif(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary)),
+                const Spacer(),
+                Text('Seçki',
+                    style: GoogleFonts.notoSans(
+                        fontSize: 11, color: AppColors.textMuted)),
+              ],
+            ),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: SizedBox(
+            height: 220,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: const EdgeInsets.fromLTRB(16, 12, 16, 8),
+              itemCount: recommended.length,
+              itemBuilder: (context, i) => SozCardFeatured(
+                soz: recommended[i],
+                onTap: () async {
+                  await Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) =>
+                          SozDetailScreen(soz: recommended[i]),
+                    ),
+                  );
+                  onUpdate();
+                },
+              ),
+            ),
+          ),
+        ),
+        SliverToBoxAdapter(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(16, 20, 16, 12),
+            child: Row(
+              children: [
+                const Icon(Icons.grid_view_rounded,
+                    color: AppColors.gold, size: 18),
+                const SizedBox(width: 8),
+                Text('Kategoriler',
+                    style: GoogleFonts.notoSerif(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w700,
+                        color: AppColors.textPrimary)),
+              ],
+            ),
+          ),
+        ),
+        SliverPadding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          sliver: SliverGrid(
+            gridDelegate:
+                const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1.55,
+            ),
+            delegate: SliverChildBuilderDelegate(
+              (context, i) {
+                final cat      = allSozCategories[i];
+                final count    = getSozByCategory(cat).length;
+                final color    = SozColors.forCategory(cat);
+                final dimColor = SozColors.dimForCategory(cat);
+                final icon     = SozColors.iconForCategory(cat);
+                return GestureDetector(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => SozCategoryScreen(category: cat),
+                    ),
+                  ),
+                  child: _CategoryTile(
+                    name: cat,
+                    count: count,
+                    label: 'söz',
+                    color: color,
+                    dimColor: dimColor,
+                    icon: icon,
+                  ),
+                );
+              },
+              childCount: allSozCategories.length,
+            ),
+          ),
+        ),
+        const SliverToBoxAdapter(
+          child: _BottomStatLine(
+            idPrefix: 'SOZ-', total: 1000, module: 'soz'),
+        ),
+      ],
+    );
+  }
+}
+
+// ── Scroll altı istatistik satırı ────────────────────────────────────────────
+class _BottomStatLine extends StatelessWidget {
+  final String idPrefix;
+  final int    total;
+  final String module;
+
+  const _BottomStatLine({
+    required this.idPrefix,
+    required this.total,
+    required this.module,
+  });
+
+  static String _fmtTime(int ms) {
+    final totalMin = ms ~/ 1000 ~/ 60;
+    final h = totalMin ~/ 60;
+    final m = totalMin % 60;
+    if (h > 0 && m > 0) return '$h sa $m dk';
+    if (h > 0) return '$h saat';
+    if (m > 0) return '$m dakika';
+    return '0 dakika';
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder<Set<String>>(
+      valueListenable: ReadTracker.instance.readIds,
+      builder: (_, readIds, __) {
+        return ValueListenableBuilder<Map<String, int>>(
+          valueListenable: TimeTracker.instance.timeMs,
+          builder: (_, timeMap, __) {
+            final readCount =
+                readIds.where((id) => id.startsWith(idPrefix)).length;
+            final pct = total == 0 ? 0.0 : readCount / total * 100;
+            final ms  = timeMap[module] ?? 0;
+
+            return Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 28),
+              child: Text(
+                '${_fmtTime(ms)} okundu  •  %${pct.toStringAsFixed(1)} tamamlandı',
+                style: GoogleFonts.notoSans(
+                  fontSize: 10,
+                  color: AppColors.textMuted,
+                  letterSpacing: 0.3,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            );
+          },
+        );
+      },
     );
   }
 }

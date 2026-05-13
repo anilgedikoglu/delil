@@ -1,34 +1,34 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import '../models/mucize_model.dart';
+import '../models/cevap_model.dart';
 import '../theme/app_theme.dart';
 import '../services/read_tracker.dart';
 
-class MucizeCardWidget extends StatelessWidget {
-  final Mucize mucize;
+class CevapCardWidget extends StatelessWidget {
+  final Cevap cevap;
   final VoidCallback? onTap;
 
-  const MucizeCardWidget({super.key, required this.mucize, this.onTap});
+  const CevapCardWidget({super.key, required this.cevap, this.onTap});
 
   @override
   Widget build(BuildContext context) {
-    final catColor    = MucizeColors.forCategory(mucize.mainCategory);
-    final catColorDim = MucizeColors.dimForCategory(mucize.mainCategory);
-    final catIcon     = MucizeColors.iconForCategory(mucize.mainCategory);
-    final typeColor   = MucizeColors.forMiracleType(mucize.miracleType);
-    final typeLabel   = MucizeColors.labelForMiracleType(mucize.miracleType);
+    final secColor    = CevapColors.forSection(cevap.section);
+    final secColorDim = CevapColors.dimForSection(cevap.section);
+    final secIcon     = CevapColors.iconForSection(cevap.section);
+    final diffColor   = CevapColors.forDifficulty(cevap.difficulty);
+    final diffLabel   = CevapColors.labelForDifficulty(cevap.difficulty);
 
     return ValueListenableBuilder<Set<String>>(
       valueListenable: ReadTracker.instance.readIds,
       builder: (context, readIds, _) {
-        final isRead = readIds.contains(mucize.id);
-        return _buildCard(catColor, catColorDim, catIcon, typeColor, typeLabel, isRead);
+        final isRead = readIds.contains(cevap.id);
+        return _buildCard(secColor, secColorDim, secIcon, diffColor, diffLabel, isRead);
       },
     );
   }
 
-  Widget _buildCard(Color catColor, Color catColorDim, IconData catIcon,
-      Color typeColor, String typeLabel, bool isRead) {
+  Widget _buildCard(Color secColor, Color secColorDim, IconData secIcon,
+      Color diffColor, String diffLabel, bool isRead) {
     return GestureDetector(
       onTap: onTap,
       child: Container(
@@ -39,7 +39,7 @@ class MucizeCardWidget extends StatelessWidget {
           border: Border.all(color: AppColors.cardBorder, width: 1),
           boxShadow: [
             BoxShadow(
-              color: catColor.withOpacity(0.08),
+              color: secColor.withOpacity(0.08),
               blurRadius: 12,
               offset: const Offset(0, 4),
             ),
@@ -55,7 +55,7 @@ class MucizeCardWidget extends StatelessWidget {
                 height: 3,
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
-                    colors: [catColor.withOpacity(0.8), catColor.withOpacity(0.3)],
+                    colors: [secColor.withOpacity(0.8), secColor.withOpacity(0.3)],
                   ),
                 ),
               ),
@@ -64,24 +64,24 @@ class MucizeCardWidget extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // ── Üst satır: ikon + MUCIZE-XXXX + tür badge ─────────
+                    // ── Üst satır: ikon + id + tick + badge ───────────────
                     Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
                           padding: const EdgeInsets.all(7),
                           decoration: BoxDecoration(
-                            color: catColorDim,
+                            color: secColorDim,
                             borderRadius: BorderRadius.circular(9),
                           ),
-                          child: Icon(catIcon, color: catColor, size: 16),
+                          child: Icon(secIcon, color: secColor, size: 16),
                         ),
                         const SizedBox(width: 9),
                         Text(
-                          mucize.id,
+                          cevap.id,
                           style: GoogleFonts.notoSans(
                             fontSize: 10,
-                            color: catColor.withOpacity(0.75),
+                            color: secColor.withOpacity(0.75),
                             letterSpacing: 0.8,
                             fontWeight: FontWeight.w700,
                           ),
@@ -91,43 +91,40 @@ class MucizeCardWidget extends StatelessWidget {
                           Padding(
                             padding: const EdgeInsets.only(right: 6),
                             child: Container(
-                              width: 20,
-                              height: 20,
+                              width: 20, height: 20,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 color: const Color(0xFF2ECC71).withOpacity(0.18),
                               ),
-                              child: const Icon(
-                                Icons.check,
-                                size: 12,
-                                color: Color(0xFF2ECC71),
+                              child: const Icon(Icons.check, size: 12,
+                                  color: Color(0xFF2ECC71)),
+                            ),
+                          ),
+                        // Zorluk badge
+                        if (diffLabel.isNotEmpty)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                            decoration: BoxDecoration(
+                              color: diffColor.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(10),
+                              border: Border.all(color: diffColor.withOpacity(0.30)),
+                            ),
+                            child: Text(
+                              diffLabel,
+                              style: GoogleFonts.notoSans(
+                                fontSize: 9,
+                                color: diffColor,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.3,
                               ),
                             ),
                           ),
-                        // Tür badge
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: typeColor.withOpacity(0.12),
-                            borderRadius: BorderRadius.circular(10),
-                            border: Border.all(color: typeColor.withOpacity(0.30)),
-                          ),
-                          child: Text(
-                            typeLabel,
-                            style: GoogleFonts.notoSans(
-                              fontSize: 9,
-                              color: typeColor,
-                              fontWeight: FontWeight.w700,
-                              letterSpacing: 0.3,
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                     const SizedBox(height: 9),
-                    // ── Tam genişlik başlık ───────────────────────────────
+                    // ── Soru başlığı ──────────────────────────────────────
                     Text(
-                      mucize.title,
+                      cevap.title,
                       style: GoogleFonts.notoSerif(
                         fontSize: 15.5,
                         fontWeight: FontWeight.w700,
@@ -137,23 +134,29 @@ class MucizeCardWidget extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    if (mucize.sourceRef.isNotEmpty) ...[
-                      const SizedBox(height: 5),
-                      Text(
-                        mucize.sourceRef,
-                        style: GoogleFonts.notoSans(
-                          fontSize: 10.5,
-                          color: catColor.withOpacity(0.8),
-                          fontWeight: FontWeight.w600,
+                    // Soran profili
+                    if (cevap.askerProfile.isNotEmpty) ...[
+                      const SizedBox(height: 4),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: CevapColors.forProfile(cevap.askerProfile).withOpacity(0.10),
+                          borderRadius: BorderRadius.circular(6),
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                        child: Text(
+                          CevapColors.labelForProfile(cevap.askerProfile),
+                          style: GoogleFonts.notoSans(
+                            fontSize: 9.5,
+                            color: CevapColors.forProfile(cevap.askerProfile),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
                       ),
                     ],
                     const SizedBox(height: 7),
-                    // ── İddia ─────────────────────────────────────────────
+                    // ── Kısa cevap ────────────────────────────────────────
                     Text(
-                      mucize.claim,
+                      cevap.shortAnswer,
                       style: GoogleFonts.notoSerif(
                         fontSize: 12.5,
                         color: AppColors.textSecondary,
@@ -170,17 +173,17 @@ class MucizeCardWidget extends StatelessWidget {
                         Wrap(
                           spacing: 5,
                           runSpacing: 4,
-                          children: mucize.tags.take(3).map((tag) => Container(
+                          children: cevap.tags.take(3).map((tag) => Container(
                             padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                             decoration: BoxDecoration(
-                              color: catColor.withOpacity(0.10),
+                              color: secColor.withOpacity(0.10),
                               borderRadius: BorderRadius.circular(20),
                             ),
                             child: Text(
                               tag,
                               style: GoogleFonts.notoSans(
                                 fontSize: 10,
-                                color: catColor.withOpacity(0.9),
+                                color: secColor.withOpacity(0.9),
                               ),
                             ),
                           )).toList(),
@@ -200,26 +203,24 @@ class MucizeCardWidget extends StatelessWidget {
   }
 }
 
-// ── Öne çıkan mucize kartı (yatay scroll) ────────────────────────────────────
-class MucizeCardFeatured extends StatelessWidget {
-  final Mucize mucize;
+// ── Öne çıkan cevap kartı (yatay scroll) ──────────────────────────────────────
+class CevapCardFeatured extends StatelessWidget {
+  final Cevap cevap;
   final VoidCallback? onTap;
   final int index;
 
-  const MucizeCardFeatured({
+  const CevapCardFeatured({
     super.key,
-    required this.mucize,
+    required this.cevap,
     this.onTap,
     required this.index,
   });
 
   @override
   Widget build(BuildContext context) {
-    final catColor    = MucizeColors.forCategory(mucize.mainCategory);
-    final catColorDim = MucizeColors.dimForCategory(mucize.mainCategory);
-    final catIcon     = MucizeColors.iconForCategory(mucize.mainCategory);
-    final typeColor   = MucizeColors.forMiracleType(mucize.miracleType);
-    final typeLabel   = MucizeColors.labelForMiracleType(mucize.miracleType);
+    final secColor    = CevapColors.forSection(cevap.section);
+    final secColorDim = CevapColors.dimForSection(cevap.section);
+    final secIcon     = CevapColors.iconForSection(cevap.section);
 
     return GestureDetector(
       onTap: onTap,
@@ -229,10 +230,10 @@ class MucizeCardFeatured extends StatelessWidget {
         decoration: BoxDecoration(
           color: AppColors.cardBg,
           borderRadius: BorderRadius.circular(20),
-          border: Border.all(color: catColor.withOpacity(0.3)),
+          border: Border.all(color: secColor.withOpacity(0.3)),
           boxShadow: [
             BoxShadow(
-              color: catColor.withOpacity(0.15),
+              color: secColor.withOpacity(0.15),
               blurRadius: 16,
               offset: const Offset(0, 6),
             ),
@@ -248,7 +249,7 @@ class MucizeCardFeatured extends StatelessWidget {
                   width: 100, height: 100,
                   decoration: BoxDecoration(
                     shape: BoxShape.circle,
-                    color: catColor.withOpacity(0.06),
+                    color: secColor.withOpacity(0.06),
                   ),
                 ),
               ),
@@ -263,10 +264,10 @@ class MucizeCardFeatured extends StatelessWidget {
                         Container(
                           padding: const EdgeInsets.all(7),
                           decoration: BoxDecoration(
-                            color: catColorDim,
+                            color: secColorDim,
                             borderRadius: BorderRadius.circular(10),
                           ),
-                          child: Icon(catIcon, color: catColor, size: 18),
+                          child: Icon(secIcon, color: secColor, size: 18),
                         ),
                         const Spacer(),
                         Container(
@@ -288,7 +289,7 @@ class MucizeCardFeatured extends StatelessWidget {
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      mucize.title,
+                      cevap.title,
                       style: GoogleFonts.notoSerif(
                         fontSize: 14,
                         fontWeight: FontWeight.w700,
@@ -298,42 +299,30 @@ class MucizeCardFeatured extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
-                    const SizedBox(height: 4),
-                    if (mucize.sourceRef.isNotEmpty)
-                      Text(
-                        mucize.sourceRef,
-                        style: GoogleFonts.notoSans(
-                          fontSize: 10,
-                          color: catColor.withOpacity(0.8),
-                          fontWeight: FontWeight.w600,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
                     const SizedBox(height: 6),
                     Text(
-                      mucize.claim,
+                      cevap.shortAnswer,
                       style: GoogleFonts.notoSerif(
                         fontSize: 11.5,
                         color: AppColors.textSecondary,
                         height: 1.5,
                         fontStyle: FontStyle.italic,
                       ),
-                      maxLines: 2,
+                      maxLines: 3,
                       overflow: TextOverflow.ellipsis,
                     ),
                     const SizedBox(height: 10),
                     Container(
                       padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                       decoration: BoxDecoration(
-                        color: typeColor.withOpacity(0.12),
+                        color: CevapColors.forDifficulty(cevap.difficulty).withOpacity(0.12),
                         borderRadius: BorderRadius.circular(10),
                       ),
                       child: Text(
-                        typeLabel,
+                        CevapColors.labelForDifficulty(cevap.difficulty),
                         style: GoogleFonts.notoSans(
                           fontSize: 9,
-                          color: typeColor,
+                          color: CevapColors.forDifficulty(cevap.difficulty),
                           fontWeight: FontWeight.w700,
                         ),
                       ),
