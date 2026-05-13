@@ -4,6 +4,7 @@ import '../models/mucize_model.dart';
 import '../theme/app_theme.dart';
 import '../services/read_tracker.dart';
 import '../services/time_tracker.dart';
+import '../services/ad_service.dart';
 
 class MucizeDetailScreen extends StatefulWidget {
   final Mucize mucize;
@@ -19,6 +20,7 @@ class _MucizeDetailScreenState extends State<MucizeDetailScreen> {
     super.initState();
     ReadTracker.instance.markRead(widget.mucize.id);
     TimeTracker.instance.startSession('mucize');
+    AdService.instance.onCardRead();
   }
 
   @override

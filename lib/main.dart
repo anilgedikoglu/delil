@@ -7,11 +7,13 @@ import 'screens/search_screen.dart';
 import 'screens/sources_screen.dart';
 import 'services/read_tracker.dart';
 import 'services/time_tracker.dart';
+import 'services/ad_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await ReadTracker.instance.init();
   await TimeTracker.instance.init();
+  await AdService.instance.init();
   SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
     statusBarColor: Colors.transparent,
     statusBarIconBrightness: Brightness.light,

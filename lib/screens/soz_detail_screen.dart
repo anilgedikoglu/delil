@@ -6,6 +6,7 @@ import '../models/soz_model.dart';
 import '../theme/app_theme.dart';
 import '../services/read_tracker.dart';
 import '../services/time_tracker.dart';
+import '../services/ad_service.dart';
 
 class SozDetailScreen extends StatefulWidget {
   final Soz soz;
@@ -26,6 +27,7 @@ class _SozDetailScreenState extends State<SozDetailScreen>
     super.initState();
     ReadTracker.instance.markRead(widget.soz.id);
     TimeTracker.instance.startSession('soz');
+    AdService.instance.onCardRead();
     _animCtrl = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 300),

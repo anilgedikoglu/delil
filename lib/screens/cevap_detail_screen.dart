@@ -4,6 +4,7 @@ import '../models/cevap_model.dart';
 import '../theme/app_theme.dart';
 import '../services/read_tracker.dart';
 import '../services/time_tracker.dart';
+import '../services/ad_service.dart';
 
 class CevapDetailScreen extends StatefulWidget {
   final Cevap cevap;
@@ -19,6 +20,7 @@ class _CevapDetailScreenState extends State<CevapDetailScreen> {
     super.initState();
     ReadTracker.instance.markRead(widget.cevap.id);
     TimeTracker.instance.startSession('cevap');
+    AdService.instance.onCardRead();
   }
 
   @override
