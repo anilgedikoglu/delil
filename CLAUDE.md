@@ -7,7 +7,7 @@ kart tabanlı UI ile sunan Flutter mobil uygulaması. 4 modül, koyu lacivert/al
 ## Teknik Yapı
 - **Flutter SDK**: `C:\flutter`
 - **Proje dizini**: `C:\src\delil`
-- **Paketler**: `google_fonts: ^6.2.1` (Noto Serif + Noto Sans), `shared_preferences`
+- **Paketler**: `google_fonts ^6.2.1`, `shared_preferences ^2.3.3`, `google_mobile_ads ^5.1.0`, `device_info_plus ^10.1.0`
 - **Veri**: `const` Dart listeleri — JSON yok, runtime parse yok
 - **Tema**: Koyu lacivert `#0D0B2B` + altın `#D4A017`
 - **Emülatör**: `emulator-5554` (Medium_Phone_API_36)
@@ -42,16 +42,17 @@ lib/
     category_screen.dart        # Deliller kategori (MarqueeTitle)
     mucize_category_screen.dart # Mucizeler kategori (MarqueeTitle)
     cevap_category_screen.dart  # Cevaplar kategori (MarqueeTitle)
-    soz_category_screen.dart    # Sözler kategori (MarqueeTitle)
-    detail_screen.dart          # Delil detayı (TimeTracker)
-    mucize_detail_screen.dart   # Mucize detayı (TimeTracker)
-    cevap_detail_screen.dart    # Cevap detayı (TimeTracker)
-    soz_detail_screen.dart      # Söz detayı (TimeTracker, SliverAppBar)
+    soz_category_screen.dart    # Sözler kategori (MarqueeTitle, AppColors.surface sabit)
+    detail_screen.dart          # Delil detayı (TimeTracker, AdService)
+    mucize_detail_screen.dart   # Mucize detayı (TimeTracker, AdService)
+    cevap_detail_screen.dart    # Cevap detayı (TimeTracker, AdService)
+    soz_detail_screen.dart      # Söz detayı (TimeTracker, AdService, SliverAppBar)
     search_screen.dart          # 4 modülde eş zamanlı arama, gruplu sonuçlar
     sources_screen.dart         # Modüle göre gruplu 38 kaynak
   services/
     read_tracker.dart           # ReadTracker singleton, ValueNotifier<Set<String>>, SharedPreferences
     time_tracker.dart           # TimeTracker singleton, ValueNotifier<Map<String,int>>, SharedPreferences
+    ad_service.dart             # AdService singleton, her 5 kartta 1 interstitial, emülatörde kapalı
   widgets/
     delil_card_widget.dart      # DelilCardWidget (liste) + DelilCardFeatured (yatay)
     mucize_card_widget.dart     # MucizeCardWidget + MucizeCardFeatured
@@ -65,22 +66,28 @@ assets/
     logo.png
     logo_round.png
     logo_horizontal.png
-android/app/src/main/res/
-  mipmap-*/ic_launcher.png          # Yuvarlak ikon (lacivert bg + logo)
-  mipmap-*/ic_launcher_round.png    # Yuvarlak ikon (aynı)
-  mipmap-*/ic_launcher_foreground.png # Adaptive icon foreground
-  mipmap-anydpi-v26/ic_launcher.xml # Adaptive icon XML
-  values/colors.xml                 # launch_bg = #0D0B2B
+android/
+  app/src/main/AndroidManifest.xml  # INTERNET izni, AdMob App ID meta-data
+  app/build.gradle.kts              # NDK 27, release signing config
+  key.properties                    # Signing şifresi (repo'da mevcut)
+  app/src/main/res/
+    mipmap-*/ic_launcher.png            # Yuvarlak ikon (lacivert bg + logo)
+    mipmap-*/ic_launcher_round.png      # Yuvarlak ikon (aynı)
+    mipmap-*/ic_launcher_foreground.png # Adaptive icon foreground
+    mipmap-anydpi-v26/ic_launcher.xml   # Adaptive icon XML
+    values/colors.xml                   # launch_bg = #0D0B2B
+delil.jks                         # Release keystore (repo'da mevcut, alias: delil)
 docs/
-  privacy_policy.html               # GitHub Pages gizlilik politikası
+  index.html                      # GitHub Pages ana sayfa (web sitesi)
+  privacy_policy.html             # GitHub Pages gizlilik politikası
 ```
 
 ## Servisler
 
 ### ReadTracker (`services/read_tracker.dart`)
 ```dart
-ReadTracker.instance.markRead(id);           // Kart okundu işaretle
-ReadTracker.instance.readIds                 // ValueNotifier<Set<String>>
+ReadTracker.instance.markRead(id);   // Kart okundu işaretle
+ReadTracker.instance.readIds         // ValueNotifier<Set<String>>
 ```
 
 ### TimeTracker (`services/time_tracker.dart`)
@@ -90,6 +97,17 @@ TimeTracker.instance.endSession('delil');    // dispose'da çağır (async, 3sn 
 TimeTracker.instance.timeMs                 // ValueNotifier<Map<String, int>>
 ```
 Modül anahtarları: `'delil'`, `'mucize'`, `'cevap'`, `'soz'`
+
+### AdService (`services/ad_service.dart`)
+```dart
+AdService.instance.init();       // main()'de çağır (emülatörde otomatik skip)
+AdService.instance.onCardRead(); // her detail screen initState'de çağır
+```
+- Her 5 kart açılışında 1 interstitial reklam (600ms gecikmeyle)
+- Emülatörde hiç çalışmaz (`device_info_plus` ile tespit)
+- Reklam kapanınca bir sonrakini önceden yükler
+- **AdMob App ID:** `ca-app-pub-6470338276121414~4246409025`
+- **Interstitial Unit ID:** `ca-app-pub-6470338276121414/8002655354` (gecisDelil)
 
 ### İstatistik Şeridi (`_BottomStatLine` in home_screen.dart)
 Her içerik bölümünün scroll sonunda görünür:
@@ -109,11 +127,14 @@ Nested `ValueListenableBuilder` ile reaktif güncelleme.
 
 ## Önemli Kurallar
 - Yeni özellik eklerken `AppColors` ve `GoogleFonts` stilini koru
-- Detail screen initState: `ReadTracker.instance.markRead(id)` + `TimeTracker.instance.startSession(module)`
-- Detail screen dispose: `TimeTracker.instance.endSession(module)` (animCtrl.dispose'dan ÖNCE)
-- AppBar arka planı her zaman `AppColors.surface` — kart rengi KULLANMA
+- Detail screen initState: `ReadTracker.markRead` + `TimeTracker.startSession` + `AdService.onCardRead`
+- Detail screen dispose: `TimeTracker.endSession` (animCtrl.dispose'dan ÖNCE)
+- **AppBar arka planı her zaman `AppColors.surface`** — kart rengi KULLANMA (soz/mucize/cevap/delil hepsi)
+- **Kart üst bandı arka planı `AppColors.surface`** — `catColorDim` değil
+- **Tag arka planları `catColor.withAlpha(25)`** — `catColorDim` değil (mucize standardı)
+- **MarqueeTitle rengi `AppColors.textPrimary`** — category rengi değil
 - `withOpacity()` deprecation uyarıları var (info seviyesi, ignore edilebilir)
-- NDK 26/27 uyumsuzluk uyarısı var (build başarılı, hata değil)
+- NDK 27.0.12077973 sabit (google_mobile_ads gereksinimi)
 
 ## Strength Badge Mantığı
 | Veri değeri   | Nokta | Etiket  |
@@ -128,13 +149,21 @@ Tüm renkler: `AppColors.gold` (#D4A017)
 - **Play Store görselleri (screenshot, feature graphic):** https://www.launchshots.com/
 - **Google Play Console uygulama silme işlem kimliği:** PDS.8886-0977-0480-55544
 
+## Google Play & GitHub
+- **Paket adı:** `com.delilapp.delil`
+- **Web sitesi:** https://anilgedikoglu.github.io/delil/
+- **Gizlilik politikası:** https://anilgedikoglu.github.io/delil/privacy_policy.html
+- **Geliştirici (Play Store):** Futurastic Tech. Ltd
+- **İletişim e-postası:** deliltheapp@gmail.com
+- **GitHub repo:** https://github.com/anilgedikoglu/delil
+
 ## Release İmzalama
 - **Keystore:** `C:\src\delil\delil.jks` (repo'da mevcut)
 - **Signing config:** `android/key.properties` (repo'da mevcut)
-- **Alias:** `delil`
-- **AAB build:** `C:\flutter\bin\flutter.bat build appbundle --release`
+- **Alias:** `delil` | **Şifre:** `android/key.properties`'de
+- **AAB build komutu:** `C:\flutter\bin\flutter.bat build appbundle --release`
 - **Çıktı:** `build\app\outputs\bundle\release\app-release.aab`
-- **Play Store son sürüm:** versionCode 4, versionName 1.2.0
+- **Play Store'a yüklenen son sürüm:** versionCode 2, versionName 1.0.1
 
 ## Emülatör Komutları
 ```bash
@@ -154,7 +183,7 @@ C:\flutter\bin\flutter.bat run -d emulator-5554
 - Strength badge: oval çerçeve + sarı nokta + sarı etiket (compact mod da dahil)
 - Badge etiketleri düzeltildi: Zayıf / Orta / Güçlü
 
-### 2026-05-13
+### 2026-05-13 (Oturum 1)
 - **Mucizeler modülü**: model, data, card widget, category screen, detail screen
 - **Cevaplar modülü**: model, data, card widget, category screen, detail screen
 - **Sözler modülü**: model, data, card widget, category screen, detail screen (SliverAppBar)
@@ -167,4 +196,15 @@ C:\flutter\bin\flutter.bat run -d emulator-5554
 - **TimeTracker**: oturum süresi takibi, SharedPreferences kalıcılığı
 - **İstatistik şeridi**: her modülün scroll sonunda "X sa Y dk · %Z tamamlandı"
 - **Kaynaklar ekranı**: 4 modül başlıklı, açıklamalı kaynak listesi
-- **GitHub Pages**: `docs/privacy_policy.html` oluşturuldu
+
+### 2026-05-13 (Oturum 2)
+- **AdMob reklamları**: google_mobile_ads + device_info_plus, her 5 kartta 1 interstitial
+- **AdService**: emülatörde kapalı, reklam kapanınca sonrakini önceden yükler
+- **Gizlilik politikası**: Futurastic Tech. Ltd, AdMob bölümü, deliltheapp@gmail.com
+- **GitHub Pages**: docs/index.html (web sitesi ana sayfası) + docs/privacy_policy.html
+- **Release keystore**: delil.jks + android/key.properties repo'ya eklendi
+- **Play Store**: yeni uygulama olarak yüklendi (com.delilapp.delil, versionCode 2)
+- **Sözler UI tutarlılığı**:
+  - soz_category_screen: AppBar `AppColors.surface` sabit, MarqueeTitle `AppColors.textPrimary`
+  - soz_card_widget: üst band `AppColors.surface`, tag bg `catColor.withAlpha(25)`
+  - soz_detail_screen: SliverAppBar `AppColors.surface` (kart rengi yok)

@@ -48,10 +48,10 @@ class SozCardWidget extends StatelessWidget {
           children: [
             // ── top colour band ──────────────────────────────────────────
             Container(
-              decoration: BoxDecoration(
-                color: catColorDim,
+              decoration: const BoxDecoration(
+                color: AppColors.surface,
                 borderRadius:
-                    const BorderRadius.vertical(top: Radius.circular(13)),
+                    BorderRadius.vertical(top: Radius.circular(13)),
               ),
               padding:
                   const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
@@ -161,13 +161,13 @@ class SozCardWidget extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(
                               horizontal: 7, vertical: 2),
                           decoration: BoxDecoration(
-                            color: catColorDim,
-                            borderRadius: BorderRadius.circular(10),
+                            color: catColor.withAlpha(25),
+                            borderRadius: BorderRadius.circular(20),
                           ),
                           child: Text(
                             tag,
                             style: GoogleFonts.notoSans(
-                              color: catColor,
+                              color: catColor.withAlpha(230),
                               fontSize: 10,
                               fontWeight: FontWeight.w500,
                             ),

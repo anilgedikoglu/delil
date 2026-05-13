@@ -32,11 +32,11 @@ class _SozCategoryScreenState extends State<SozCategoryScreen> {
       body: CustomScrollView(
         slivers: [
           SliverAppBar(
-            backgroundColor: catColorDim,
+            backgroundColor: AppColors.surface,
             pinned: true,
             leading: IconButton(
               icon: const Icon(Icons.arrow_back_ios_new,
-                  color: Colors.white),
+                  color: AppColors.gold),
               onPressed: () => Navigator.of(context).pop(),
             ),
             title: Row(
@@ -46,10 +46,10 @@ class _SozCategoryScreenState extends State<SozCategoryScreen> {
                 Expanded(
                   child: MarqueeTitle(
                     text: widget.category,
-                    style: GoogleFonts.notoSans(
-                      color: catColor,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
+                    style: GoogleFonts.notoSerif(
+                      color: AppColors.textPrimary,
+                      fontSize: 16,
+                      fontWeight: FontWeight.w700,
                     ),
                   ),
                 ),
