@@ -80,6 +80,11 @@ delil.jks                         # Release keystore (repo'da mevcut, alias: del
 docs/
   index.html                      # GitHub Pages ana sayfa (web sitesi)
   privacy_policy.html             # GitHub Pages gizlilik politikası
+ios/
+  Runner/Info.plist               # GADApplicationIdentifier, SKAdNetworkItems, ITSAppUsesNonExemptEncryption
+  Runner/Assets.xcassets/AppIcon.appiconset/  # 15 ikon, Format24bppRgb (alpha yok)
+  Runner.xcodeproj/project.pbxproj            # Bundle ID: com.futurastic.Delil
+codemagic.yaml                    # android-release + ios-release workflow
 ```
 
 ## Servisler
@@ -154,6 +159,26 @@ Nested `ValueListenableBuilder` ile reaktif güncelleme.
 
 Tüm renkler: `AppColors.gold` (#D4A017)
 
+## Codemagic CI/CD
+- **Konfigürasyon:** `codemagic.yaml` (proje kökü)
+- **İki workflow:** `android-release` (AAB) + `ios-release` (IPA → TestFlight)
+- **Signing grubu:** `signing_credentials` (Codemagic → Environment variables → Groups)
+  - `CERTIFICATE_PRIVATE_KEY` = base64 encode of `C:\src\magnus_app\ios_certs\ios_key_rsa.pem` (RSA formatı — BEGIN RSA PRIVATE KEY)
+  - NOT: `ios_distribution.key` (PKCS#8) değil, `ios_key_rsa.pem` (RSA) kullan
+- **App Store Connect entegrasyon adı:** `Codemagic` (Codemagic → Integrations → App Store Connect → "Codemagic")
+- **Apple Team ID:** `SN5Y726ZKF`
+- **Paylaşımlı sertifikalar:** `C:\src\magnus_app\ios_certs\` — tüm Futurastic projeleri bu sertifikaları paylaşır
+
+### iOS ikon kuralı
+- **Format:** `Format24bppRgb` (alpha kanalı OLMAMALI — App Store reddeder)
+- **Arka plan:** `g.Clear(Color.FromArgb(255, 13, 11, 43))` → `#0D0B2B` doldur
+- **Kaynak:** `assets/images/logo_round.png` → 15 boyut
+
+### App Store screenshot kuralı
+- iPhone: `1242 × 2688 px` (alpha kanalı olmadan)
+- iPad: `2064 × 2752 px` (alpha kanalı olmadan)
+- Format24bppRgb + `#0D0B2B` arka plan doldurma zorunlu
+
 ## Faydalı Araçlar
 - **Play Store görselleri (screenshot, feature graphic):** https://www.launchshots.com/
 - **Google Play Console uygulama silme işlem kimliği:** PDS.8886-0977-0480-55544
@@ -163,8 +188,11 @@ Tüm renkler: `AppColors.gold` (#D4A017)
 - **iOS Bundle ID:** `com.futurastic.Delil`
 - **App Store App ID:** `6780416985`
 - **App Store Connect:** https://appstoreconnect.apple.com/apps/6780416985/distribution/ios/version/inflight
-- **Web sitesi:** https://anilgedikoglu.github.io/delil/
-- **Gizlilik politikası:** https://anilgedikoglu.github.io/delil/privacy_policy.html
+- **Web sitesi (GitHub repo):** https://anilgedikoglu.github.io/delil/
+- **Gizlilik politikası (GitHub repo):** https://anilgedikoglu.github.io/delil/privacy_policy.html
+- **Web sitesi (Futurastic):** https://futurastictech.github.io/delil/
+- **Destek sayfası (Futurastic):** https://futurastictech.github.io/delil/support.html
+- **Gizlilik politikası (Futurastic):** https://futurastictech.github.io/delil/privacy-policy.html
 - **Geliştirici (Play Store):** Futurastic Tech. Ltd
 - **İletişim e-postası:** deliltheapp@gmail.com
 - **GitHub repo:** https://github.com/anilgedikoglu/delil
@@ -175,7 +203,12 @@ Tüm renkler: `AppColors.gold` (#D4A017)
 - **Alias:** `delil` | **Şifre:** `android/key.properties`'de
 - **AAB build komutu:** `C:\flutter\bin\flutter.bat build appbundle --release`
 - **Çıktı:** `build\app\outputs\bundle\release\app-release.aab`
-- **Play Store'a yüklenen son sürüm:** versionCode 2, versionName 1.0.1
+- **Play Store'a yüklenen son sürüm:** versionCode 10, versionName 1.1.0
+- **App Store (iOS) ilk sürüm:** build number timestamp bazlı (Codemagic), versionName 1.0.0
+- **key.properties storeFile:** `../../delil.jks` (app/build.gradle.kts'e göre relative)
+- **iOS App Store kategori:** Reference (ikincil: Education)
+- **iOS App Store keywords:** `allah,mucize,islam,iman,kuran,tanrı,din,inanç,felsefe,kelam,ateizm,kanıt,varlık,akıl,söz,delil,cevap`
+- **iOS SKU:** `delil001`
 
 ## Emülatör Komutları
 ```bash
@@ -223,7 +256,14 @@ C:\flutter\bin\flutter.bat run -d emulator-5554
 
 ### 2026-06-15
 - **AdMob iOS/Android ayrı ID'ler**: ad_service.dart'ta `_interstitialIdAndroid`, `_interstitialIdIOS`, `_rewardedIdIOS` ayrı sabitler; `Platform.isIOS` getter ile otomatik seçim
-- **iOS Info.plist**: `GADApplicationIdentifier` + `SKAdNetworkItems` eklendi
+- **iOS Info.plist**: `GADApplicationIdentifier` + `SKAdNetworkItems` + `ITSAppUsesNonExemptEncryption=false` eklendi
 - **Geri tuşu reklamı**: Her 10 geri tuşuna 1 interstitial (300ms gecikmeyle)
 - **_BackAdObserver**: `NavigatorObserver` → `didPop` olayını yakalar, tüm ekranları kapsar, tek kayıt `main.dart`'ta
-- **Codemagic CI/CD**: `codemagic.yaml` oluşturuldu (Android release AAB, mapping.txt artifact)
+- **iOS Bundle ID**: `com.futurastic.Delil` — xcodeproj'ta 3 Runner + RunnerTests yeri güncellendi
+- **iOS App ikonları**: 15 boyut, Format24bppRgb (alpha yok), `#0D0B2B` arka plan, `logo_round.png` kaynak
+- **key.properties storeFile**: `../../delil.jks` (file() android/app/ göreli → proje kökü için 2 üst dizin)
+- **Codemagic CI/CD**: `codemagic.yaml` oluşturuldu — `android-release` + `ios-release` (signing_credentials grubu, Codemagic entegrasyonu)
+- **Futurastic web**: `C:\src\futurastictech.github.io\delil\` — index.html, support.html, privacy-policy.html (TR/EN)
+- **App Store screenshots**: iPhone 1242×2688, iPad 2064×2752, Format24bppRgb + `#0D0B2B` (alpha kanalı kaldırıldı)
+- **Sürüm**: `pubspec.yaml` → `1.1.0+10`; Play Store son: versionCode 10, versionName 1.1.0
+- **App Store**: SKU `delil001`, kategori Reference (ikincil Education), iOS ilk build gönderildi TestFlight'a
