@@ -159,7 +159,8 @@ Tüm renkler: `AppColors.gold` (#D4A017)
 - **Google Play Console uygulama silme işlem kimliği:** PDS.8886-0977-0480-55544
 
 ## Google Play & GitHub
-- **Paket adı:** `com.delilapp.delil`
+- **Android paket adı:** `com.delilapp.delil`
+- **iOS Bundle ID:** `com.futurastic.Delil`
 - **Web sitesi:** https://anilgedikoglu.github.io/delil/
 - **Gizlilik politikası:** https://anilgedikoglu.github.io/delil/privacy_policy.html
 - **Geliştirici (Play Store):** Futurastic Tech. Ltd
