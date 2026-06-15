@@ -100,14 +100,23 @@ Modül anahtarları: `'delil'`, `'mucize'`, `'cevap'`, `'soz'`
 
 ### AdService (`services/ad_service.dart`)
 ```dart
-AdService.instance.init();       // main()'de çağır (emülatörde otomatik skip)
-AdService.instance.onCardRead(); // her detail screen initState'de çağır
+AdService.instance.init();         // main()'de çağır (emülatörde otomatik skip)
+AdService.instance.onCardRead();   // her detail screen initState'de çağır
+AdService.instance.onBackPressed();// NavigatorObserver'dan otomatik çağrılır
+AdService.instance.showRewarded(onRewarded: () {}); // isteğe bağlı
 ```
 - Her 5 kart açılışında 1 interstitial reklam (600ms gecikmeyle)
+- Her 10 geri tuşuna basışta 1 interstitial reklam (300ms gecikmeyle)
+- Geri tuşu sayacı `_BackAdObserver` (NavigatorObserver) ile `main.dart`'tan otomatik beslenir
 - Emülatörde hiç çalışmaz (`device_info_plus` ile tespit)
 - Reklam kapanınca bir sonrakini önceden yükler
-- **AdMob App ID:** `ca-app-pub-6470338276121414~4246409025`
-- **Interstitial Unit ID:** `ca-app-pub-6470338276121414/8002655354` (gecisDelil)
+- Rewarded reklam altyapısı hazır (`showRewarded()` metodu), iOS'ta önceden yüklenir
+- **Android AdMob App ID:** `ca-app-pub-6470338276121414~4246409025`
+- **iOS AdMob App ID:** `ca-app-pub-6470338276121414~5227480364`
+- **Android Interstitial Unit ID:** `ca-app-pub-6470338276121414/8002655354` (gecisDelil)
+- **iOS Interstitial Unit ID:** `ca-app-pub-6470338276121414/1488716764` (gecisDelil iOS)
+- **iOS Rewarded Unit ID:** `ca-app-pub-6470338276121414/2709128236` (delilrewardedios)
+- Android Rewarded: henüz AdMob'da oluşturulmadı
 
 ### İstatistik Şeridi (`_BottomStatLine` in home_screen.dart)
 Her içerik bölümünün scroll sonunda görünür:
@@ -208,3 +217,10 @@ C:\flutter\bin\flutter.bat run -d emulator-5554
   - soz_category_screen: AppBar `AppColors.surface` sabit, MarqueeTitle `AppColors.textPrimary`
   - soz_card_widget: üst band `AppColors.surface`, tag bg `catColor.withAlpha(25)`
   - soz_detail_screen: SliverAppBar `AppColors.surface` (kart rengi yok)
+
+### 2026-06-15
+- **AdMob iOS/Android ayrı ID'ler**: ad_service.dart'ta `_interstitialIdAndroid`, `_interstitialIdIOS`, `_rewardedIdIOS` ayrı sabitler; `Platform.isIOS` getter ile otomatik seçim
+- **iOS Info.plist**: `GADApplicationIdentifier` + `SKAdNetworkItems` eklendi
+- **Geri tuşu reklamı**: Her 10 geri tuşuna 1 interstitial (300ms gecikmeyle)
+- **_BackAdObserver**: `NavigatorObserver` → `didPop` olayını yakalar, tüm ekranları kapsar, tek kayıt `main.dart`'ta
+- **Codemagic CI/CD**: `codemagic.yaml` oluşturuldu (Android release AAB, mapping.txt artifact)

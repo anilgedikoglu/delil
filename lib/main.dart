@@ -23,6 +23,13 @@ void main() async {
   runApp(const DelilApp());
 }
 
+class _BackAdObserver extends NavigatorObserver {
+  @override
+  void didPop(Route route, Route? previousRoute) {
+    AdService.instance.onBackPressed();
+  }
+}
+
 class DelilApp extends StatelessWidget {
   const DelilApp({super.key});
 
@@ -32,6 +39,7 @@ class DelilApp extends StatelessWidget {
       title: 'DELİL',
       debugShowCheckedModeBanner: false,
       theme: buildAppTheme(),
+      navigatorObservers: [_BackAdObserver()],
       home: const MainShell(),
     );
   }
