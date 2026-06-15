@@ -13,3 +13,25 @@ workflows:
     artifacts:
       - build/app/outputs/bundle/release/app-release.aab
       - build/app/outputs/mapping/release/mapping.txt
+
+  ios-release:
+    name: iOS Release (IPA)
+    max_build_duration: 60
+    environment:
+      flutter: stable
+      ios_signing:
+        distribution_type: app_store
+        bundle_identifier: com.futurastic.Delil
+    scripts:
+      - name: Flutter pub get
+        script: flutter pub get
+      - name: Build IPA
+        script: flutter build ipa --release
+    artifacts:
+      - build/ios/ipa/*.ipa
+    publishing:
+      app_store_connect:
+        api_key: $APP_STORE_CONNECT_PRIVATE_KEY
+        key_id: $APP_STORE_CONNECT_KEY_IDENTIFIER
+        issuer_id: $APP_STORE_CONNECT_ISSUER_ID
+        submit_to_testflight: true
