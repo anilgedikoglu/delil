@@ -1,21 +1,34 @@
 # -*- coding: utf-8 -*-
 """
-1000 mucize kartını mucize_data.dart'a çevirir.
+1000 mucize kartını (yeni yapı) mucize_data.dart'a çevirir.
 Çalıştır: python tools/gen_mucize.py
 """
-import json, os
+import json, os, re
 
-JSON_PATH = r'C:\Users\AG\Documents\Downloads\urasokul\DELIL_1000_mucize_karti.json'
+JSON_PATH = r'C:\Users\AG\Documents\Downloads\urasokul\DELIL_1000_mucize_final_wow_detayli.json'
 OUT_PATH  = r'C:\src\delil\lib\data\mucize_data.dart'
 
+PYTHON = r'C:\Users\AG\AppData\Local\Android\Sdk\ndk\27.0.12077973\toolchains\llvm\prebuilt\windows-x86_64\python3\python.exe'
+
 def ds(s):
+    """Dart string literal (single-quoted, escaped)."""
     if s is None: return "''"
-    s = str(s)
+    s = str(s).strip()
     s = s.replace('\\', '\\\\')
     s = s.replace("'", "\\'")
     s = s.replace('\r', '').replace('\n', ' ').replace('\t', ' ')
     s = s.replace('$', '\\$')
     return f"'{s}'"
+
+def strip_perspective(title):
+    """Remove ' — Perspective Suffix' from title for cleaner display."""
+    # Titles like 'Ana Konu — Perspektif Açısından' → 'Ana Konu'
+    idx = title.find(' — ')  # em dash with spaces
+    if idx == -1:
+        idx = title.find(' - ')  # fallback: plain dash
+    if idx > 0:
+        return title[:idx]
+    return title
 
 print(f'Reading {JSON_PATH} …')
 with open(JSON_PATH, 'r', encoding='utf-8') as f:
@@ -24,71 +37,120 @@ with open(JSON_PATH, 'r', encoding='utf-8') as f:
 cards = data['cards']
 print(f'Total cards: {len(cards)}')
 
-# Önerilen ilk 12 kart (kategori temsilcileri)
+# ── Kategori sabitleri ──────────────────────────────────────────────────────
+CAT_CONST = {
+    "Kur'an'ın metin, belagat ve korunma mucizeleri":           '_mMetin',
+    "Astronomi ve kozmoloji mucizeleri":                         '_mAstro',
+    "Fizik, kimya ve element mucizeleri":                        '_mFizik',
+    "Yerbilim, atmosfer, meteoroloji ve okyanus mucizeleri":     '_mYer',
+    "Biyoloji, embriyoloji, tıp ve insan bedeni mucizeleri":     '_mBiyo',
+    "Hayvanlar, bitkiler ve ekoloji mucizeleri":                 '_mCanli',
+    "Matematiksel, istatistiksel ve şifre mucizeleri":           '_mMat',
+    "Tarihsel, arkeolojik ve haber mucizeleri":                  '_mTarih',
+    "Hadislerde gelecek haberleri ve sosyal-teknolojik işaretler": '_mHadis',
+    "İbadet, hüküm, ahlak ve yaşam hikmetleri":                 '_mIbadet',
+}
+
+# Önerilen 12 kart — her kategoriden 1-2 tane, ilk benzersiz konu
 RECOMMENDED_IDS = [
-    'MUCIZE-0001', 'MUCIZE-0101', 'MUCIZE-0151', 'MUCIZE-0201',
-    'MUCIZE-0301', 'MUCIZE-0351', 'MUCIZE-0401', 'MUCIZE-0501',
-    'MUCIZE-0601', 'MUCIZE-0701', 'MUCIZE-0901', 'MUCIZE-0951',
+    'MUCIZE-0001', 'MUCIZE-0008', 'MUCIZE-0081',
+    'MUCIZE-0111', 'MUCIZE-0191', 'MUCIZE-0241',
+    'MUCIZE-0301', 'MUCIZE-0451', 'MUCIZE-0601',
+    'MUCIZE-0681', 'MUCIZE-0771', 'MUCIZE-0941',
 ]
 
 lines = [
     '// ignore_for_file: lines_longer_than_80_chars, prefer_single_quotes',
     "import '../models/mucize_model.dart';",
     '',
-    '// ── Kategori sabitleri ────────────────────────────────────────────────',
-    "const String _mKuran    = 'Kur\\'an Mucizeleri';",
-    "const String _mPeygamber = 'Hz. Muhammed\\'in Mucizeleri';",
-    "const String _mKissa    = 'Peygamberler ve Kur\\'an Kıssaları';",
-    "const String _mHikmet   = 'İslam\\'ın Hikmet ve Medeniyet Mucizeleri';",
+    '// ── Kategori sabitleri ───────────────────────────────────────────────────',
+    "const String _mMetin   = 'Kur\\'an\\'ın metin, belagat ve korunma mucizeleri';",
+    "const String _mAstro   = 'Astronomi ve kozmoloji mucizeleri';",
+    "const String _mFizik   = 'Fizik, kimya ve element mucizeleri';",
+    "const String _mYer     = 'Yerbilim, atmosfer, meteoroloji ve okyanus mucizeleri';",
+    "const String _mBiyo    = 'Biyoloji, embriyoloji, tıp ve insan bedeni mucizeleri';",
+    "const String _mCanli   = 'Hayvanlar, bitkiler ve ekoloji mucizeleri';",
+    "const String _mMat     = 'Matematiksel, istatistiksel ve şifre mucizeleri';",
+    "const String _mTarih   = 'Tarihsel, arkeolojik ve haber mucizeleri';",
+    "const String _mHadis   = 'Hadislerde gelecek haberleri ve sosyal-teknolojik işaretler';",
+    "const String _mIbadet  = 'İbadet, hüküm, ahlak ve yaşam hikmetleri';",
     '',
     'const List<String> allMucizeCategories = [',
-    '  _mKuran, _mPeygamber, _mKissa, _mHikmet,',
+    '  _mMetin, _mAstro, _mFizik, _mYer, _mBiyo,',
+    '  _mCanli, _mMat, _mTarih, _mHadis, _mIbadet,',
     '];',
     '',
     'const List<Mucize> allMucizeler = [',
 ]
 
-CAT_CONST = {
-    'Kur\'an Mucizeleri':                           '_mKuran',
-    'Hz. Muhammed\'in Mucizeleri':                  '_mPeygamber',
-    'Peygamberler ve Kur\'an Kıssaları':            '_mKissa',
-    'İslam\'ın Hikmet ve Medeniyet Mucizeleri':     '_mHikmet',
-}
-
 for i, card in enumerate(cards):
     new_id  = f'MUCIZE-{i+1:04d}'
-    raw_cat = card.get('category', '')
-    cat_c   = CAT_CONST.get(raw_cat, '_mKuran')
+    raw_cat = card.get('mainCategory', '')
+    cat_c   = CAT_CONST.get(raw_cat, '_mMetin')
+
+    # Strip ' — perspective' from title for clean display
+    raw_title = card.get('title', '')
+    clean_title = strip_perspective(raw_title)
 
     lines.append('  Mucize(')
     lines.append(f"    id: '{new_id}',")
-    lines.append(f'    title: {ds(card.get("title",""))},')
-    lines.append(f'    category: {cat_c},')
-    lines.append(f'    subcategory: {ds(card.get("subcategory",""))},')
-    sr = card.get('sourceRef','')
-    st = card.get('sourceTextShort','')
+    lines.append(f'    title: {ds(clean_title)},')
+    lines.append(f'    mainCategory: {cat_c},')
+
+    sc = card.get('subcategory', '')
+    if sc: lines.append(f'    subcategory: {ds(sc)},')
+
+    sr = card.get('sourceRef', '')
     if sr: lines.append(f'    sourceRef: {ds(sr)},')
-    if st: lines.append(f'    sourceTextShort: {ds(st)},')
+
+    oe = card.get('originalExpression', '')
+    if oe: lines.append(f'    originalExpression: {ds(oe)},')
+
     lines.append(f'    claim: {ds(card.get("claim",""))},')
-    mt = card.get('miracleType','')
+
+    mt = card.get('miracleType', '')
     if mt: lines.append(f'    miracleType: {ds(mt)},')
-    lines.append(f'    explanation: {ds(card.get("explanation",""))},')
-    vn = card.get('verificationNote','')
-    if vn: lines.append(f'    verificationNote: {ds(vn)},')
+
+    sc2 = card.get('strengthOrCaution', '')
+    if sc2: lines.append(f'    strengthOrCaution: {ds(sc2)},')
+
+    lines.append(f'    shortExplanation: {ds(card.get("shortExplanation",""))},')
+
+    # Detailed explanation sub-object
+    de = card.get('detailedExplanation', {})
+    if de:
+        da  = de.get('detayliAciklama', '')
+        nvb = de.get('nedenVayBeDedirtiyor', '')
+        kn  = de.get('kaynakNotu', '')
+        ihn = de.get('ihtiyatNotu', '')
+        if any([da, nvb, kn, ihn]):
+            lines.append('    detailedExplanation: const MucizeDetailedExplanation(')
+            if da:  lines.append(f'      detayliAciklama: {ds(da)},')
+            if nvb: lines.append(f'      nedenVayBeDedirtiyor: {ds(nvb)},')
+            if kn:  lines.append(f'      kaynakNotu: {ds(kn)},')
+            if ihn: lines.append(f'      ihtiyatNotu: {ds(ihn)},')
+            lines.append('    ),')
+
     tags = card.get('tags', [])
+    if isinstance(tags, str):
+        tags = [t.strip() for t in tags.split() if t.strip()]
     if tags:
-        lines.append(f'    tags: [{", ".join(ds(t) for t in tags)}],')
+        lines.append(f'    tags: [{", ".join(ds(t) for t in tags[:6])}],')
+
     srcs = card.get('sources', [])
+    if isinstance(srcs, str):
+        srcs = srcs.split()
     if srcs:
-        lines.append(f'    sources: [{", ".join(ds(s) for s in srcs)}],')
+        lines.append(f'    sources: [{", ".join(ds(s) for s in srcs[:4])}],')
+
     lines.append('  ),')
 
 lines += [
     '];',
     '',
-    '// ── Yardımcı fonksiyonlar ─────────────────────────────────────────────',
+    '// ── Yardımcı fonksiyonlar ────────────────────────────────────────────────',
     'List<Mucize> getMucizeByCategory(String cat) =>',
-    '    allMucizeler.where((m) => m.category == cat).toList();',
+    '    allMucizeler.where((m) => m.mainCategory == cat).toList();',
     '',
     'List<Mucize> searchMucize(String q) {',
     '  final lower = q.toLowerCase();',
