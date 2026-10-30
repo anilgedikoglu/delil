@@ -203,7 +203,7 @@ Tüm renkler: `AppColors.gold` (#D4A017)
 - **Alias:** `delil` | **Şifre:** `android/key.properties`'de
 - **AAB build komutu:** `C:\flutter\bin\flutter.bat build appbundle --release`
 - **Çıktı:** `build\app\outputs\bundle\release\app-release.aab`
-- **Play Store'a yüklenen son sürüm:** versionCode 10, versionName 1.1.0
+- **Play Store'a yüklenen son sürüm:** versionCode 12, versionName 1.1.2
 - **App Store (iOS) ilk sürüm:** build number timestamp bazlı (Codemagic), versionName 1.0.0
 - **key.properties storeFile:** `../../delil.jks` (app/build.gradle.kts'e göre relative)
 - **iOS App Store kategori:** Reference (ikincil: Education)
@@ -254,6 +254,15 @@ C:\flutter\bin\flutter.bat run -d emulator-5554
   - soz_card_widget: üst band `AppColors.surface`, tag bg `catColor.withAlpha(25)`
   - soz_detail_screen: SliverAppBar `AppColors.surface` (kart rengi yok)
 
+### 2026-10-30
+- **targetSdk = 36**: `android/app/build.gradle.kts` — Play Store API 36 deadline (2026-11-01) için güncellendi
+- **minSdk = 24**: Play automatic protection zorunluluğu (eskisi `flutter.minSdkVersion` = 21)
+- **version 1.1.2+12**: `pubspec.yaml` — yeni build
+- **Google Play API yüklemesi**: `google-api-python-client` + `google-auth` ile AAB programatik yükleme
+- **GCP service account**: `play-publisher@oyuncu-dukkani.iam.gserviceaccount.com` (oyuncu-dukkani projesi) — Play Console'a Yönetici olarak davet edildi
+- **AAB yüklendi**: versionCode=12, production track'e commit edildi (Python upload_aab.py scripti)
+- **Sürüm durumu**: Play Console'da "1.1.2 incelemede"
+
 ### 2026-06-15
 - **AdMob iOS/Android ayrı ID'ler**: ad_service.dart'ta `_interstitialIdAndroid`, `_interstitialIdIOS`, `_rewardedIdIOS` ayrı sabitler; `Platform.isIOS` getter ile otomatik seçim
 - **iOS Info.plist**: `GADApplicationIdentifier` + `SKAdNetworkItems` + `ITSAppUsesNonExemptEncryption=false` eklendi
@@ -265,5 +274,5 @@ C:\flutter\bin\flutter.bat run -d emulator-5554
 - **Codemagic CI/CD**: `codemagic.yaml` oluşturuldu — `android-release` + `ios-release` (signing_credentials grubu, Codemagic entegrasyonu)
 - **Futurastic web**: `C:\src\futurastictech.github.io\delil\` — index.html, support.html, privacy-policy.html (TR/EN)
 - **App Store screenshots**: iPhone 1242×2688, iPad 2064×2752, Format24bppRgb + `#0D0B2B` (alpha kanalı kaldırıldı)
-- **Sürüm**: `pubspec.yaml` → `1.1.0+10`; Play Store son: versionCode 10, versionName 1.1.0
+- **Sürüm**: `pubspec.yaml` → `1.1.2+12`; Play Store son: versionCode 12, versionName 1.1.2
 - **App Store**: SKU `delil001`, kategori Reference (ikincil Education), iOS ilk build gönderildi TestFlight'a
