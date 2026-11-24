@@ -1,7 +1,6 @@
 // ignore_for_file: lines_longer_than_80_chars
 import 'dart:io';
 import 'package:device_info_plus/device_info_plus.dart';
-import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 /// Her 5 kart okumada 1 geçiş reklamı (interstitial) gösterir.
@@ -18,14 +17,10 @@ class AdService {
   // iOS
   static const String _interstitialIdIOS =
       'ca-app-pub-6470338276121414/1488716764'; // gecisDelil (iOS)
-  static const String _rewardedIdIOS =
-      'ca-app-pub-6470338276121414/2709128236'; // delilrewardedios (iOS)
   // ─────────────────────────────────────────────────────────────────────────
 
   static String get _interstitialAdUnitId =>
       Platform.isIOS ? _interstitialIdIOS : _interstitialIdAndroid;
-
-  static String get _rewardedAdUnitId => _rewardedIdIOS;
 
   static const int _showEvery     = 5;  // kaç kartta bir reklam
   static const int _showEveryBack = 10; // kaç geri tuşunda bir reklam
@@ -34,12 +29,11 @@ class AdService {
   bool _isEmulator  = false;
   int  _readCount   = 0;
   int  _backCount   = 0;
+  static const Duration _minGap = Duration(seconds: 90); // iki reklam arası en az
+  DateTime? _lastShown;
 
   InterstitialAd? _interstitialAd;
   bool _interstitialReady = false;
-
-  RewardedAd? _rewardedAd;
-  bool _rewardedReady = false;
 
   // ── Başlatma ───────────────────────────────────────────────────────────────
   Future<void> init() async {
@@ -59,7 +53,6 @@ class AdService {
 
     await MobileAds.instance.initialize();
     _loadInterstitial();
-    if (Platform.isIOS) _loadRewarded();
   }
 
   // ── Kart okundu — 4 detail screen'den çağrılır ────────────────────────────
@@ -101,6 +94,9 @@ class AdService {
   // ── Interstitial göster ───────────────────────────────────────────────────
   void _showInterstitial() {
     if (!_interstitialReady || _interstitialAd == null) return;
+    final last = _lastShown;
+    if (last != null && DateTime.now().difference(last) < _minGap) return;
+    _lastShown = DateTime.now();
 
     _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
       onAdDismissedFullScreenContent: (ad) {
@@ -121,50 +117,4 @@ class AdService {
     _interstitialAd = null;
     _interstitialReady = false;
   }
-
-  // ── Rewarded yükle (iOS) ──────────────────────────────────────────────────
-  void _loadRewarded() {
-    RewardedAd.load(
-      adUnitId: _rewardedAdUnitId,
-      request: const AdRequest(),
-      rewardedAdLoadCallback: RewardedAdLoadCallback(
-        onAdLoaded: (ad) {
-          _rewardedAd = ad;
-          _rewardedReady = true;
-        },
-        onAdFailedToLoad: (_) {
-          _rewardedReady = false;
-          Future.delayed(const Duration(seconds: 30), _loadRewarded);
-        },
-      ),
-    );
-  }
-
-  /// Rewarded reklamı göster. [onRewarded] kullanıcı ödülü kazanınca çağrılır.
-  void showRewarded({VoidCallback? onRewarded}) {
-    if (_isEmulator || !_rewardedReady || _rewardedAd == null) return;
-
-    _rewardedAd!.fullScreenContentCallback = FullScreenContentCallback(
-      onAdDismissedFullScreenContent: (ad) {
-        ad.dispose();
-        _rewardedAd = null;
-        _rewardedReady = false;
-        if (Platform.isIOS) _loadRewarded();
-      },
-      onAdFailedToShowFullScreenContent: (ad, _) {
-        ad.dispose();
-        _rewardedAd = null;
-        _rewardedReady = false;
-        if (Platform.isIOS) _loadRewarded();
-      },
-    );
-
-    _rewardedAd!.show(
-      onUserEarnedReward: (_, __) => onRewarded?.call(),
-    );
-    _rewardedAd = null;
-    _rewardedReady = false;
-  }
-
-  bool get isRewardedReady => _rewardedReady && !_isEmulator;
 }
