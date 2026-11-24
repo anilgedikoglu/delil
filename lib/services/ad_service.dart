@@ -106,6 +106,7 @@ class AdService {
         _loadInterstitial();
       },
       onAdFailedToShowFullScreenContent: (ad, _) {
+        _lastShown = null;
         ad.dispose();
         _interstitialAd = null;
         _interstitialReady = false;
